@@ -1,18 +1,10 @@
 <?php 
-  //check if cookie login exist and contains "yes" 
-  //else redirect to login.php
-  if(!isset($_COOKIE['login'])){
-    header('location: login.php');
-  }
-  else{
-    $cookie = $_COOKIE['login'];
-    $salt = "55648sferelmmsnn'§(è(yy$^ùùdfkhf";
+  
+  session_start(); 
 
-    $pieces = explode(",", $cookie);
-    if( md5($pieces[0].$salt) !== $pieces[1] ){
-      header('location: login.php');
-    }
-  }
+  
+  $isLoggedIn = isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true;
+  $email = isset($_SESSION['email']) ? $_SESSION['email'] : '';
 
 
 
@@ -32,7 +24,7 @@
             <a class="a" href="#">Enveloppes</a>
             <a class="a" href="#">Accessoires</a>
         </div>
-        <a class="a" href="logout.php">Logout</a>
+        <a class="a" href="logout.php">Hi <?php echo htmlspecialchars(explode('@', $_SESSION['email'])[0]); ?>, logout?</a>
     </nav>
 </body>
 </html>

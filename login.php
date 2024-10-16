@@ -1,23 +1,43 @@
 <?php
-function canLogin($p_email, $p_password){
-    return $p_email === "senne.robbrecht@outlook.be" && $p_password === "sennesenne";
-}
+	function canLogin($p_email, $p_password){
+		$conn = new PDO('mysql:host=localhost;dbname=webshop_hotairballoons', 'root', '');
+		$statement= $conn->prepare('SELECT * FROM users WHERE email = :email');
+		$statement->bindValue(':email', $p_email);
+		$statement->execute();
+		$user = $statement->fetch(PDO::FETCH_ASSOC);
+		
+		if($user){
+			$hash= $user['password'];
+			if(password_verify($p_password, $hash)){
+				return true;
+			}else{
+				return false;
+			}
+		}
+		else{
+			return false;
+		}
 
-// When we log in
-if(!empty($_POST)){
-    $email = $_POST['email'];
-    $password = $_POST['password'];
-
-    if(canLogin($email, $password)){
-        $salt = "55648sferelmmsnn'§(è(yy$^ùùdfkhf";
-        $cookieValue = $email . "," . md5($email . $salt);
-        setcookie("login", $cookieValue, time() + 60 * 60 * 24 * 30);
-        header('location: index.php');
-        exit(); 
-    } else {
-        $error = true;
-    }
 }
+ 
+	//wanneer gaan we pas inloggen
+	if(!empty($_POST)){
+		$email = $_POST['email'];
+		$password = $_POST['password'];
+
+		if( canLogin($email, $password)){
+			session_start();
+			$_SESSION['loggedin'] = true;
+			$_SESSION['email'] = $email;
+			
+			header('location: index.php');
+			exit();
+		}
+		else{
+			$error = true;
+		}
+		
+	}
 ?>
 
 <!DOCTYPE html>
@@ -37,6 +57,7 @@ if(!empty($_POST)){
                 <input type="email" name="email" placeholder="E-mail" required>
                 <input type="password" name="password" placeholder="Wachtwoord" required>
                 <button type="submit">Login</button>
+                <a href="signup.php">Don't have an account yet? Sign up</a>
             </form>
             <?php if (isset($error) && $error): ?>
                 <p style="color: red;">Invalid email or password!</p>
