@@ -1,18 +1,37 @@
 <?php
-if(!empty($_POST)){
-    $email = $_POST['email'];
-	$password = $_POST['password'];
+$error = false; 
 
-	$options = [
-		'cost' => 12,
-	];
-	 $hash = password_hash($password, PASSWORD_DEFAULT , $options);
-	
-	 $conn = new PDO('mysql:host=localhost;dbname=webshop_hotairballoons', 'root', '');
-	$statement = $conn->prepare('INSERT INTO users(email, password) VALUES(:email, :password)');
-	$statement->bindValue(':email', $email);
-	$statement->bindValue(':password', $hash);
-	$statement->execute();
+if (!empty($_POST)) {
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+
+   
+    $conn = new PDO('mysql:host=localhost;dbname=webshop_hotairballoons', 'root', '');
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+   
+    $statement = $conn->prepare('SELECT COUNT(*) FROM users WHERE email = :email');
+    $statement->bindValue(':email', $email);
+    $statement->execute();
+    $emailExists = $statement->fetchColumn() > 0;
+
+    if ($emailExists) {
+        $error = 'This E-mail already exists. Please log in.';
+    } else {
+        
+        $options = ['cost' => 12];
+        $hash = password_hash($password, PASSWORD_DEFAULT, $options);
+
+        
+        $statement = $conn->prepare('INSERT INTO users(email, password) VALUES(:email, :password)');
+        $statement->bindValue(':email', $email);
+        $statement->bindValue(':password', $hash);
+        $statement->execute();
+
+       
+        header('Location: login.php');
+        exit;
+    }
 }
 ?>
 
@@ -21,7 +40,7 @@ if(!empty($_POST)){
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Page</title>
+    <title>Sign Up</title>
     <link rel="stylesheet" href="css/webshop.css">
 </head>
 <body class="bodylogin">
@@ -35,8 +54,9 @@ if(!empty($_POST)){
                 <button type="submit">Sign up</button>
                 <a href="login.php">Already have an account? Sign in</a>
             </form>
-            <?php if (isset($error) && $error): ?>
-                <p style="color: red;">Invalid email or password!</p>
+            
+            <?php if ($error): ?>
+                <p style="color: red;"><?php echo htmlspecialchars($error); ?></p>
             <?php endif; ?>
         </div>
     </div>
