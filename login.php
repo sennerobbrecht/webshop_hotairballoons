@@ -20,7 +20,7 @@
 
 }
  
-	//wanneer gaan we pas inloggen
+	
 	if(!empty($_POST)){
 		$email = $_POST['email'];
 		$password = $_POST['password'];
@@ -61,6 +61,7 @@
             </form>
             <?php if (isset($error) && $error): ?>
                 <p style="color: red;">Invalid email or password!</p>
+				
             <?php endif; ?>
         </div>
     </div>
