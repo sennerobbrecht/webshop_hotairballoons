@@ -20,35 +20,44 @@
 
 }
  
-	
-	if(!empty($_POST)){
-		$email = $_POST['email'];
-		$password = $_POST['password'];
+if (!empty($_POST)) {
+    $email = $_POST['email'];
+    $password = $_POST['password'];
 
-		if( canLogin($email, $password)){
-			session_start();
-			$_SESSION['loggedin'] = true;
-			$_SESSION['email'] = $email;
-			
-			header('location: index.php');
-			exit();
-		}
-		else{
-			$error = true;
-		}
-		
-	}
+    // Controleer of het admin is
+    if ($email === 'admin@admin.com' && $password === 'Admin') {
+        session_start();
+        $_SESSION['loggedin'] = true;
+        $_SESSION['email'] = $email;
+
+        header('location: index.php');
+        exit();
+    }
+
+    // Normale logincontrole
+    if (canLogin($email, $password)) {
+        session_start();
+        $_SESSION['loggedin'] = true;
+        $_SESSION['email'] = $email;
+
+        header('location: index.php');
+        exit();
+    } else {
+        $error = true;
+    }
+}
+
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
-    <link rel="stylesheet" href="css/webshop.css">
+    <link rel="stylesheet" href="css/login.css">
+  
 </head>
-<body class="bodylogin">
+<body>
     <div class="left"></div>
     <div class="right">
         <div class="login-form">
@@ -60,12 +69,12 @@
                 <a href="signup.php">Don't have an account yet? Sign up</a>
             </form>
             <?php if (isset($error) && $error): ?>
-                <p style="color: red;">Invalid email or password!</p>
-				
+                <p>Invalid email or password!</p>
             <?php endif; ?>
         </div>
     </div>
 </body>
 </html>
+
 
 

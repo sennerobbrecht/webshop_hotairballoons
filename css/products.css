@@ -1,0 +1,155 @@
+  /* Algemene styling voor de pagina */
+  body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: space-between;
+    margin: 20px;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+}
+
+/* Styling voor de productcontainer */
+.product-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    width: 75%;
+}
+
+/* Styling voor de knop om een nieuw product toe te voegen */
+.add-button-container {
+    width: 20%;
+    text-align: center;
+    border: 2px dashed #ddd;
+    padding: 20px;
+    border-radius: 8px;
+    margin-left: 20px;
+    gap: 10px;
+    position: relative;
+}
+
+.add-button {
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.add-button-container p {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    margin-top: 70px; /* Zorg ervoor dat de tekst niet in de knop zit */
+}
+
+/* Styling voor de individuele producten */
+.product {
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 8px;
+    width: 200px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #f9f9f9;
+}
+
+.product img {
+    max-width: 100px;
+    margin-bottom: 10px;
+}
+
+.product-actions a, .product-actions button {
+    background-color: red;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    display: block;
+    margin: 5px 0;
+}
+
+.product-actions a:hover, .product-actions button:hover {
+    background-color: darkred;
+}
+
+/* Popup modal voor het toevoegen van producten */
+.popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Inhoud van de popup */
+.popup-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    width: 400px;
+    animation: slideIn 0.3s ease-in-out;
+}
+
+.popup-content form input[type="text"],
+.popup-content form input[type="file"],
+.popup-content form textarea,
+.popup-content form select,
+.popup-content form input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.popup-content form button {
+    width: 100%;
+    padding: 10px;
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.popup-content form button:hover {
+    background-color: darkred;
+}
+
+/* Animaties voor het popupvenster */
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+@keyframes slideIn {
+    0% { transform: translateY(-50px); }
+    100% { transform: translateY(0); }
+}

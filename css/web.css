@@ -1,0 +1,310 @@
+
+
+
+
+/* Algemene stijl */
+.bodyindex {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* Navbar */
+.navbar {
+    background-color: red;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Links: Welkom bericht */
+.navbar-left .welcome {
+    color: white;
+    font-size: 18px;
+}
+
+/* Midden: Zoekbalk */
+.navbar-center .search-form {
+    display: flex;
+    gap: 10px;
+}
+
+.search-input {
+    padding: 8px;
+    border: none;
+    border-radius: 4px;
+    width: 300px;
+}
+
+.search-button {
+    padding: 8px 15px;
+    background-color: white;
+    color: red;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.search-button:hover {
+    background-color: #ffcccc;
+}
+
+/* Hamburger Menu */
+.hamburger-menu {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30px;
+    height: 25px;
+    cursor: pointer;
+}
+
+.hamburger-menu .line {
+    width: 100%;
+    height: 4px;
+    background-color: white;
+    border-radius: 2px;
+}
+
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    top: 0;
+    right: -360px; /* Start buiten het scherm */
+    width: 300px;
+    height: 100%;
+    background-color: white;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px;
+    transition: right 0.3s ease; /* Gladde overgang */
+    z-index: 1000;
+}
+
+/* Sidebar links */
+.sidebar a {
+    text-decoration: none;
+    font-size: 18px;
+    color: red;
+    padding: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.sidebar a:hover {
+    background-color: #ffcccc;
+}
+
+/* Sluit-knop */
+.sidebar .close-btn {
+    font-size: 30px;
+    color: red;
+    align-self: flex-end;
+    cursor: pointer;
+}
+
+/* Sidebar zichtbaar */
+.sidebar.show {
+    right: 0; /* Schuif naar binnen */
+}
+
+/* Algemene instellingen */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 24px;
+    color: #333;
+    margin: 20px 0;
+}
+
+.section-divider {
+    border: none;
+    height: 2px;
+    background-color: #ddd;
+    margin: 20px 0;
+}
+
+/* Hero sectie */
+.hero {
+    text-align: center;
+    padding: 30px 20px;
+    background-color: #f9f9f9;
+}
+
+.hero-title {
+    font-size: 36px;
+    color: #444;
+    margin-bottom: 20px;
+}
+
+.hero-image {
+    max-width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.hero-photo {
+    max-width: 80%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Laatst toegevoegd sectie */
+/* Laatst toegevoegd sectie */
+.latest-products .product-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    padding: 0 20px;
+}
+
+/* Product carrousel */
+.carousel-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.product-carousel {
+    display: flex;
+    transition: transform 0.3s ease;
+    gap: 20px;
+}
+
+/* Standaard formaat en stijl van productkaarten */
+.product-card {
+    width: 180px; /* Zorgt ervoor dat de kolom minder breed is */
+    text-align: center;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden; /* Zorgt ervoor dat eventuele inhoud niet buiten de kaart gaat */
+}
+
+.product-card img {
+    width: 100%; /* Zorgt ervoor dat de afbeelding de volledige breedte van de container vult */
+    height: 150px; /* Stel een vaste hoogte in */
+    object-fit: cover; /* Zorgt ervoor dat de afbeelding de container vult zonder vervorming */
+    border-radius: 4px;
+}
+
+.product-title {
+    font-size: 14px; /* Kleinere tekstgrootte voor titels */
+    margin-top: 10px;
+}
+
+
+
+
+/* Pijltjes voor carrousel */
+.carousel-button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    font-size: 24px;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 1000;
+}
+
+.left {
+    left: 10px;
+}
+
+.right {
+    right: 10px;
+}
+
+
+/* Categorieën sectie */
+/* Categorieën sectie */
+.categories .category-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    padding: 0 20px;
+}
+
+.category-card {
+    width: calc(50% - 20px); /* Zorg ervoor dat de categorieën per 2 naast elkaar komen */
+    text-align: center;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Toevoegen van animatie bij hover */
+}
+
+.category-card:hover {
+    transform: scale(1.05); /* Effect bij hover, de kaart wordt iets groter */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Versterk schaduw bij hover */
+}
+
+.category-card img {
+    width: 100%;               /* Zorg ervoor dat de afbeelding de volledige breedte van de container inneemt */
+    height: 200px;             /* Stel een vaste hoogte in voor de afbeelding */
+    object-fit: cover;         /* Zorg ervoor dat de afbeelding de container vult zonder vervorming */
+    border-radius: 4px;        /* Afronding van de afbeelding */
+    transition: transform 0.3s ease; /* Voeg overgang toe bij hover voor een leuk effect */
+}
+
+.category-card img:hover {
+    transform: scale(1.1); /* Vergroot de afbeelding bij hover */
+}
+
+.category-card a {
+    text-decoration: none;
+    color: black;
+}
+
+.category-title {
+    font-size: 16px;
+    margin-top: 10px;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Responsieve stijlen voor kleinere schermen */
+@media (max-width: 768px) {
+    .category-card {
+        width: calc(50% - 10px); /* Op kleinere schermen 2 kaarten naast elkaar */
+    }
+}
+
+@media (max-width: 480px) {
+    .category-card {
+        width: 100%; /* Op mobiele apparaten worden de kaarten één per één weergegeven */
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

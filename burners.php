@@ -24,7 +24,7 @@ if ($conn->connect_error) {
 }
 
 // Query om alle producten op te halen
-$sql = "SELECT image, title, description, price FROM products WHERE category = 'Accessoires'";
+$sql = "SELECT image, title, description, price FROM products WHERE category = 'burners'";
 $result = $conn->query($sql);
 
 // Controleer of er resultaten zijn
@@ -55,7 +55,7 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Luchtballonnen</title>
+    <title>Branders</title>
     <link rel="stylesheet" href="css/category.css">
 </head>
 <body>
@@ -69,7 +69,7 @@ $conn->close();
     ?>
 
 <div class="container">
-    <h1>Accessoires</h1>
+    <h1>Branders</h1>
     <div class="divider"></div>
 
     <!-- Producten -->

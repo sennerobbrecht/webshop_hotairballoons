@@ -1,5 +1,5 @@
 <?php
-
+  
     $isLoggedIn = isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true;
     $email = isset($_SESSION['email']) ? $_SESSION['email'] : '';
    
@@ -49,15 +49,12 @@
         <a href="enveloppes.php">Enveloppes</a>
         <a href="accessoires.php">Accessoires</a>
         <a href="burners.php">Branders</a>
-        <a href="profile.php">Profiel</a>
-        <a href="shopping_cart.php">Winkelmand</a>
+        <a href="products.php">Mijn Producten</a>
+       
+      
         <a href="logout.php">Uitloggen</a>
     </div>
 
     <script src="javascript/navbar.js"></script>
 </body>
 </html>
-
-
-
-

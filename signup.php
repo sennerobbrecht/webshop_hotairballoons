@@ -1,4 +1,6 @@
 <?php
+ $isLoggedIn = isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true;
+ $email = isset($_SESSION['email']) ? $_SESSION['email'] : '';
 $error = false; 
 
 if (!empty($_POST)) {
@@ -41,7 +43,7 @@ if (!empty($_POST)) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up</title>
-    <link rel="stylesheet" href="css/webshop.css">
+    <link rel="stylesheet" href="css/login.css">
 </head>
 <body class="bodylogin">
     <div class="left"></div>
