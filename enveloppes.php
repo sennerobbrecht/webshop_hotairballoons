@@ -1,5 +1,7 @@
 <?php
 session_start();
+
+// Controleer of de gebruiker is ingelogd
 $isLoggedIn = isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true;
 $email = isset($_SESSION['email']) ? $_SESSION['email'] : '';
 
@@ -8,46 +10,16 @@ if (!$isLoggedIn) {
     exit();
 }
 
-// Dummy producten (in een echte situatie haal je dit uit een database)
+// Laad de benodigde klassen
+require_once __DIR__ . '/classes/Database.php';
+require_once __DIR__ . '/classes/category.php';
 
-// Verbinding met de database
-$servername = "localhost";
-$username = "root";
-$password = ""; // Of je database-wachtwoord
-$database = "webshop_hotairballoons";
+// Initialiseer de database en de Product-klasse
+$db = new Database();
+$productManager = new category($db);
 
-$conn = new mysqli($servername, $username, $password, $database);
-
-// Controleer verbinding
-if ($conn->connect_error) {
-    die("Verbinding mislukt: " . $conn->connect_error);
-}
-
-// Query om alle producten op te halen
-$sql = "SELECT image, title, description, price FROM products WHERE category = 'Enveloppes'";
-$result = $conn->query($sql);
-
-// Controleer of er resultaten zijn
-$producten = [];
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $producten[] = [
-            'afbeelding' => $row['image'],
-            'titel' => $row['title'],
-            'beschrijving' => $row['description'],
-            'prijs' => '€' . number_format($row['price'], 2, ',', '.')
-        ];
-    }
-} else {
-    echo "Geen producten gevonden.";
-}
-
-// Verbinding sluiten
-$conn->close();
-
-// $producten-array bevat nu de gegevens uit de database
-
-
+// Haal de producten op voor de categorie 'Enveloppes'
+$producten = $productManager->getProductsByCategory('Enveloppes');
 ?>
 
 <!DOCTYPE html>
@@ -55,7 +27,7 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Luchtballonnen</title>
+    <title>Enveloppes</title>
     <link rel="stylesheet" href="css/category.css">
 </head>
 <body>
@@ -66,7 +38,7 @@ $conn->close();
     } else {
         include_once 'navbar.php';
     }
-    ?>
+?>
 
 <div class="container">
     <h1>Enveloppes</h1>
@@ -77,13 +49,15 @@ $conn->close();
         <?php if (!empty($producten)): ?>
             <?php foreach ($producten as $product): ?>
                 <div class="product-card">
-                    <img src="<?php echo htmlspecialchars($product['afbeelding']); ?>" alt="<?php echo htmlspecialchars($product['titel']); ?>">
-                    <div class="content">
-                        <h2><?php echo htmlspecialchars($product['titel']); ?></h2>
-                        <p><?php echo htmlspecialchars($product['beschrijving']); ?></p>
-                        <div class="price"><?php echo htmlspecialchars($product['prijs']); ?></div>
-                        <button>Voeg toe</button>
-                    </div>
+                    <!-- Verpak de productkaart in een <a>-tag die naar product.php leidt met het product-ID -->
+                    <a href="product.php?id=<?php echo $product['id']; ?>">
+                        <img src="<?php echo htmlspecialchars($product['afbeelding']); ?>" alt="<?php echo htmlspecialchars($product['titel']); ?>">
+                        <div class="content">
+                            <h2><?php echo htmlspecialchars($product['titel']); ?></h2>
+                            <p><?php echo htmlspecialchars($product['beschrijving']); ?></p>
+                            <div class="price"><?php echo htmlspecialchars($product['prijs']); ?></div>
+                        </div>
+                    </a>
                 </div>
             <?php endforeach; ?>
         <?php else: ?>

@@ -1,147 +1,75 @@
 <?php
 session_start();
-$isLoggedIn = isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true;
-$email = isset($_SESSION['email']) ? $_SESSION['email'] : '';
+// Klassen laden
+require_once __DIR__ . '/classes/Database.php';
+require_once __DIR__ . '/classes/Products.php';
 
-if (!$isLoggedIn) {
+// Controleer of gebruiker is ingelogd en admin is
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || $_SESSION['email'] !== 'admin@admin.com') {
     header('Location: login.php');
     exit();
 }
 
-// Databaseverbinding  
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "webshop_hotairballoons";
+// Maak database- en product-objecten
+$db = new Database();
+$productManager = new Product($db);
 
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-// Controleer of de 'category'-kolom bestaat en voeg toe indien nodig
-$checkColumnQuery = "SHOW COLUMNS FROM products LIKE 'category'";
-$result = $conn->query($checkColumnQuery);
-if ($result->num_rows === 0) {
-    $alterTableQuery = "ALTER TABLE products ADD category VARCHAR(255) NOT NULL";
-    $conn->query($alterTableQuery);
-}
-
-// Predefined categories (met de nieuwe categorie "Burners")
+// Vooraf gedefinieerde categorieën
 $categories = ['Complete Ballonnen', 'Manden', 'Enveloppes', 'Accessoires', 'Burners'];
 
-// Product toevoegen
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_product'])) {
-    $title = $conn->real_escape_string($_POST['title']);
-    $category = $conn->real_escape_string($_POST['category']);
-    $description = $conn->real_escape_string($_POST['description']);
-    $price = floatval($_POST['price']);
-    $image = $_FILES['image']['name'];
-
-    // Validatie en upload van afbeelding
-    $target_dir = "uploads/";
-    if (!is_dir($target_dir)) {
-        mkdir($target_dir, 0777, true); // Maak de map aan indien deze niet bestaat
-    }
-    $target_file = $target_dir . basename($image);
-    $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-
-    // Controleer of het bestand een afbeelding is
-    $check = getimagesize($_FILES['image']['tmp_name']);
-    if ($check === false) {
-        die("Fout: Het bestand is geen afbeelding.");
-    }
-
-    // Controleer bestandstype
-    $allowed_types = ['jpg', 'jpeg', 'png', 'gif'];
-    if (!in_array($imageFileType, $allowed_types)) {
-        die("Fout: Alleen JPG, JPEG, PNG en GIF zijn toegestaan.");
-    }
-
-    // Upload bestand
-    if (!move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
-        die("Fout: Het uploaden van het bestand is mislukt.");
-    }
-
-    // SQL-query uitvoeren
-    $stmt = $conn->prepare("INSERT INTO products (title, category, image, description, price) VALUES (?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssssd", $title, $category, $target_file, $description, $price);
-    if ($stmt->execute()) {
-        // Redirect na succesvol toevoegen
-        header("Location: " . $_SERVER['PHP_SELF']);
-        exit();
-    } else {
-        die("Fout bij het toevoegen van product: " . $stmt->error);
-    }
-    $stmt->close();
-}
-
-// Product verwijderen
+// Verwijder product als er een 'delete' parameter is
 if (isset($_GET['delete'])) {
-    $product_id = intval($_GET['delete']);
-    $deleteQuery = "DELETE FROM products WHERE id = ?";
-    $stmt = $conn->prepare($deleteQuery);
-    $stmt->bind_param("i", $product_id);
-    if ($stmt->execute()) {
+    try {
+        $productManager->deleteProduct($_GET['delete']);
         header("Location: " . $_SERVER['PHP_SELF']);
         exit();
-    } else {
-        die("Fout bij het verwijderen van product: " . $stmt->error);
+    } catch (Exception $e) {
+        echo $e->getMessage();
     }
 }
 
-// Product bijwerken (als de update-knop wordt ingedrukt)
-if (isset($_POST['update_product'])) {
-    $product_id = intval($_POST['product_id']);
-    $title = $conn->real_escape_string($_POST['title']);
-    $category = $conn->real_escape_string($_POST['category']);
-    $description = $conn->real_escape_string($_POST['description']);
-    $price = floatval($_POST['price']);
-    if ($price < 0) {
-        die("Fout: De prijs kan niet negatief zijn.");
-    }
-    
+// Product toevoegen of bewerken
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    try {
+        $title = $_POST['title'];
+        $category = $_POST['category'];
+        $description = $_POST['description'];
+        $price = floatval($_POST['price']);
+        $image = $_FILES['image']['name'];
 
-    // Afbeelding bijwerken als een nieuwe afbeelding is geüpload
-    $image = $_FILES['image']['name'] ? $_FILES['image']['name'] : $_POST['existing_image'];
-
-    if ($image) {
-        // Validatie en upload van afbeelding
-        $target_dir = "uploads/";
+        // Dynamisch pad voor uploadmap
+        $target_dir = __DIR__ . "/uploads/";
         if (!is_dir($target_dir)) {
-            mkdir($target_dir, 0777, true); // Maak de map aan indien deze niet bestaat
+            mkdir($target_dir, 0777, true);
         }
         $target_file = $target_dir . basename($image);
-        $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
-
-        // Controleer of het bestand een afbeelding is
-        $check = getimagesize($_FILES['image']['tmp_name']);
-        if ($check === false) {
-            die("Fout: Het bestand is geen afbeelding.");
-        }
-
-        // Controleer bestandstype
-        $allowed_types = ['jpg', 'jpeg', 'png', 'gif'];
-        if (!in_array($imageFileType, $allowed_types)) {
-            die("Fout: Alleen JPG, JPEG, PNG en GIF zijn toegestaan.");
-        }
-
-        // Upload bestand
         if (!move_uploaded_file($_FILES['image']['tmp_name'], $target_file)) {
-            die("Fout: Het uploaden van het bestand is mislukt.");
+            throw new Exception("Fout: Het uploaden van het bestand is mislukt.");
         }
-    }
 
-    $updateQuery = "UPDATE products SET title = ?, category = ?, image = ?, description = ?, price = ? WHERE id = ?";
-    $stmt = $conn->prepare($updateQuery);
-    $stmt->bind_param("ssssdi", $title, $category, $target_file, $description, $price, $product_id);
-    if ($stmt->execute()) {
+        // Als een product-id is ingesteld, wordt het product bewerkt
+        if (isset($_POST['product_id']) && !empty($_POST['product_id'])) {
+            // Product bewerken
+            $productManager->updateProduct($_POST['product_id'], $title, $category, $description, $price, "uploads/" . basename($image));
+        } else {
+            // Product toevoegen
+            $productManager->addProduct($title, $category, $description, $price, "uploads/" . basename($image));
+        }
+
+        // Redirect om dubbele inzendingen te voorkomen
         header("Location: " . $_SERVER['PHP_SELF']);
         exit();
-    } else {
-        die("Fout bij het bijwerken van product: " . $stmt->error);
+    } catch (Exception $e) {
+        echo $e->getMessage();
     }
+}
+
+// Haal producten op
+$products = [];
+try {
+    $products = $productManager->getAllProducts();
+} catch (Exception $e) {
+    echo $e->getMessage();
 }
 ?>
 
@@ -152,40 +80,57 @@ if (isset($_POST['update_product'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mijn Producten</title>
     <link rel="stylesheet" href="css/products.css">
+    <style>
+        /* CSS voor de popups */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .popup-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 400px;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
 
     <div class="container">
-   
         <div class="product-container">
             <div class="add-button-container">
-                <button class="add-button" onclick="showPopup()">+</button>
+                <button class="add-button" onclick="showAddPopup()">+</button>
                 <p>Voeg een nieuw product toe</p>
             </div>
 
-            <?php
-            // Haal de producten op uit de database
-            $query = "SELECT * FROM products";
-            $result = $conn->query($query);
-
-            if ($result->num_rows > 0) {
-                while ($row = $result->fetch_assoc()) {
-                    echo '<div class="product">';
-                    echo '<img src="' . $row['image'] . '" alt="' . $row['title'] . '">';
-                    echo '<h3>' . $row['title'] . '</h3>';
-                    echo '<p>' . $row['category'] . '</p>';
-                    echo '<p>' . $row['description'] . '</p>';
-                    echo '<p>€' . number_format($row['price'], 2) . '</p>';
-                    echo '<div class="product-actions">
-                        <a href="edit_product.php?id=' . $row['id'] . '">Bewerken</a>
-                        <a href="?delete=' . $row['id'] . '">Verwijderen</a>
-                    </div>';
-                    echo '</div>';
-                }
-            } else {
-                echo '<p>Er zijn geen producten om weer te geven.</p>';
-            }
-            ?>
+            <?php if (!empty($products)): ?>
+                <?php foreach ($products as $product): ?>
+                    <div class="product">
+                        <img src="<?= htmlspecialchars($product['image']) ?>" alt="<?= htmlspecialchars($product['title']) ?>">
+                        <h3><?= htmlspecialchars($product['title']) ?></h3>
+                        <p><?= htmlspecialchars($product['category']) ?></p>
+                        <p><?= htmlspecialchars($product['description']) ?></p>
+                        <p>€<?= number_format($product['price'], 2) ?></p>
+                        <div class="product-actions">
+                            <!-- Bewerken knop opent de bewerkingspopup -->
+                            <a href="javascript:void(0);" onclick="showEditPopup(<?= $product['id'] ?>)">Bewerken</a>
+                            <a href="?delete=<?= $product['id'] ?>">Verwijderen</a>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p>Er zijn geen producten om weer te geven.</p>
+            <?php endif; ?>
         </div>
     </div>
 
@@ -194,47 +139,95 @@ if (isset($_POST['update_product'])) {
         <div class="popup-content">
             <h2>Nieuw Product Toevoegen</h2>
             <form method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="product_id" value=""> <!-- Leeg bij toevoegen -->
+
                 <label for="title">Titel</label>
                 <input type="text" name="title" required>
 
                 <label for="category">Categorie</label>
                 <select name="category" required>
-                    <?php
-                    foreach ($categories as $category) {
-                        echo "<option value='$category'>$category</option>";
-                    }
-                    ?>
+                    <?php foreach ($categories as $category): ?>
+                        <option value="<?= htmlspecialchars($category) ?>"><?= htmlspecialchars($category) ?></option>
+                    <?php endforeach; ?>
                 </select>
 
                 <label for="image">Afbeelding</label>
-                <input type="file" name="image" accept="image/*" required>
+                <input type="file" name="image" accept="image/*">
 
                 <label for="description">Beschrijving</label>
                 <textarea name="description" rows="4" required></textarea>
 
                 <label for="price">Prijs</label>
-                <input type="number" name="price" step="0.01"min="0" required>
+                <input type="number" name="price" step="0.01" min="0" required>
 
                 <button type="submit" name="add_product">Voeg Toe</button>
             </form>
         </div>
     </div>
 
+    <!-- Popup voor het bewerken van een product -->
+    <div class="popup" id="editProductPopup">
+        <div class="popup-content">
+            <h2>Product Bewerken</h2>
+            <form method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="product_id" id="editProductId"> <!-- ID wordt hier ingevuld -->
+
+                <label for="title">Titel</label>
+                <input type="text" name="title" id="editTitle" required>
+
+                <label for="category">Categorie</label>
+                <select name="category" id="editCategory" required>
+                    <?php foreach ($categories as $category): ?>
+                        <option value="<?= htmlspecialchars($category) ?>"><?= htmlspecialchars($category) ?></option>
+                    <?php endforeach; ?>
+                </select>
+
+                <label for="image">Afbeelding</label>
+                <input type="file" name="image" id="editImage" accept="image/*">
+
+                <label for="description">Beschrijving</label>
+                <textarea name="description" id="editDescription" rows="4" required></textarea>
+
+                <label for="price">Prijs</label>
+                <input type="number" name="price" id="editPrice" step="0.01" min="0" required>
+
+                <button type="submit" name="edit_product">Wijzig Product</button> <!-- Wijzig product -->
+            </form>
+        </div>
+    </div>
+
     <script>
-        function showPopup() {
+        // Functie om de toevoegen-popup te tonen
+        function showAddPopup() {
             document.getElementById('addProductPopup').style.display = 'flex';
         }
 
-        function closePopup() {
-            document.getElementById('addProductPopup').style.display = 'none';
+        // Functie om de bewerken-popup te tonen en de productgegevens in te vullen
+        function showEditPopup(productId) {
+            var products = <?php echo json_encode($products); ?>;
+            var product = products.find(p => p.id === productId);
+
+            if (product) {
+                document.getElementById('editProductId').value = product.id;
+                document.getElementById('editTitle').value = product.title;
+                document.getElementById('editCategory').value = product.category;
+                document.getElementById('editDescription').value = product.description;
+                document.getElementById('editPrice').value = product.price;
+            }
+
+            document.getElementById('editProductPopup').style.display = 'flex';
         }
     </script>
 </body>
 </html>
 
-<?php
-$conn->close();
-?>
+
+
+
+
+
+
+
 
 
 

@@ -1,7 +1,3 @@
-
-
-
-
 /* Algemene stijl */
 .bodyindex {
     margin: 0;
@@ -158,7 +154,6 @@ body {
 }
 
 /* Laatst toegevoegd sectie */
-/* Laatst toegevoegd sectie */
 .latest-products .product-grid {
     display: flex;
     flex-wrap: wrap;
@@ -182,32 +177,57 @@ body {
     gap: 20px;
 }
 
-/* Standaard formaat en stijl van productkaarten */
+/* Zorg dat de producten naast elkaar komen */
+.products-grid {
+    display: grid; /* Gebruik een grid layout */
+    grid-template-columns: repeat(4, 1fr); /* 4 producten per rij */
+    gap: 20px; /* Ruimte tussen de items */
+    margin: 0 auto; /* Dit zorgt ervoor dat de grid gecentreerd wordt */
+    max-width: 1200px; /* Limiteer de breedte van de grid */
+}
+
+/* Productkaart stijl */
 .product-card {
-    width: 180px; /* Zorgt ervoor dat de kolom minder breed is */
-    text-align: center;
-    background-color: white;
     border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    overflow: hidden; /* Zorgt ervoor dat eventuele inhoud niet buiten de kaart gaat */
+    border-radius: 5px;
+    text-align: center;
+    padding: 15px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
+/* Product afbeelding */
 .product-card img {
-    width: 100%; /* Zorgt ervoor dat de afbeelding de volledige breedte van de container vult */
-    height: 150px; /* Stel een vaste hoogte in */
-    object-fit: cover; /* Zorgt ervoor dat de afbeelding de container vult zonder vervorming */
-    border-radius: 4px;
+    max-width: 100%;
+    height: 150px; /* Zorg voor uniforme afbeeldinghoogte */
+    object-fit: cover;
+    border-radius: 5px;
 }
 
+/* Product titel */
 .product-title {
-    font-size: 14px; /* Kleinere tekstgrootte voor titels */
-    margin-top: 10px;
+    font-size: 18px;
+    margin: 10px 0;
 }
 
+/* Product prijs */
+.product-price {
+    font-weight: bold;
+    color: #2c7a7b;
+}
 
+/* Media query voor responsiviteit */
+@media (max-width: 768px) {
+    .products-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 producten per rij op kleinere schermen */
+    }
+}
 
+@media (max-width: 480px) {
+    .products-grid {
+        grid-template-columns: 1fr; /* 1 product per rij op zeer kleine schermen */
+    }
+}
 
 /* Pijltjes voor carrousel */
 .carousel-button {
@@ -231,8 +251,6 @@ body {
     right: 10px;
 }
 
-
-/* Categorieën sectie */
 /* Categorieën sectie */
 .categories .category-grid {
     display: flex;
@@ -282,18 +300,28 @@ body {
     color: #333;
 }
 
-/* Responsieve stijlen voor kleinere schermen */
-@media (max-width: 768px) {
-    .category-card {
-        width: calc(50% - 10px); /* Op kleinere schermen 2 kaarten naast elkaar */
-    }
+/* Filterformulier centraal plaatsen */
+.all-products form {
+    display: flex;
+    justify-content: center; /* Horizontaal centreren */
+    align-items: center; /* Verticaal centreren */
+    gap: 10px; /* Voeg ruimte toe tussen de elementen */
+    margin-bottom: 30px; /* Ruimte tussen formulier en producten */
 }
 
-@media (max-width: 480px) {
-    .category-card {
-        width: 100%; /* Op mobiele apparaten worden de kaarten één per één weergegeven */
-    }
+#category {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
 }
+
+/* Algemene styling voor de producten en formulier voor consistentie */
+.all-products {
+    padding: 0 20px;
+    text-align: center; /* Zorg ervoor dat de tekst (zoals titels) ook gecentreerd is */
+}
+
 
 
 

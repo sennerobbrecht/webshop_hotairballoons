@@ -1,11 +1,7 @@
 <?php
-  
-    $isLoggedIn = isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true;
-    $email = isset($_SESSION['email']) ? $_SESSION['email'] : '';
-   
-    ?>
-
-
+$isLoggedIn = isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true;
+$email = isset($_SESSION['email']) ? $_SESSION['email'] : '';
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -50,9 +46,12 @@
         <a href="accessoires.php">Accessoires</a>
         <a href="burners.php">Branders</a>
         <a href="products.php">Mijn Producten</a>
-       
-      
         <a href="logout.php">Uitloggen</a>
+    </div>
+
+    <!-- Content Section -->
+    <div class="container">
+        <!-- Voeg hier de inhoud van de pagina toe -->
     </div>
 
     <script src="javascript/navbar.js"></script>

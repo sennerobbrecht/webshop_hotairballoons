@@ -1,0 +1,131 @@
+/* Algemene pagina-instellingen */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+    line-height: 1.6;
+}
+
+nav {
+    background-color: #2c3e50;
+    padding: 15px 0;
+    text-align: center;
+    color: #fff;
+    font-size: 18px;
+}
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+nav ul li {
+    display: inline-block;
+    margin: 0 20px;
+}
+
+nav ul li a {
+    color: #ecf0f1;
+    text-decoration: none;
+}
+
+nav ul li a:hover {
+    color: #e74c3c;
+}
+
+/* Productpagina */
+.product-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    background: #fff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.product-image {
+    flex: 1;
+    padding: 20px;
+}
+
+.product-image img {
+    width: 100%;
+    max-width: 600px;
+    height: auto;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.product-details {
+    flex: 1;
+    padding: 20px;
+    max-width: 600px;
+    margin-left: 40px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.product-title {
+    font-size: 2.5em;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.product-description {
+    font-size: 1.2em;
+    color: #666;
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+.product-price {
+    font-size: 1.8em;
+    color: #e74c3c;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* Knop om toe te voegen aan winkelwagentje */
+.add-to-cart-btn {
+    padding: 15px 30px;
+    font-size: 1.2em;
+    background-color: red;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.add-to-cart-btn:hover {
+    background-color:red;
+    transform: scale(1.05);
+}
+
+.add-to-cart-btn:active {
+    background-color: red;
+    transform: scale(1);
+}
+
+/* Responisve design voor mobiele apparaten */
+@media (max-width: 768px) {
+    .product-page {
+        flex-direction: column;
+        padding: 20px;
+    }
+
+    .product-details {
+        margin-left: 0;
+        padding: 20px;
+    }
+
+    .product-image img {
+        max-width: 100%;
+    }
+}
+

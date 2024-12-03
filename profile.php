@@ -1,77 +1,49 @@
 <?php
 session_start();
-$isLoggedIn = isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true;
-$email = isset($_SESSION['email']) ? $_SESSION['email'] : '';
+require_once __DIR__ . '/classes/Database.php';
+require_once __DIR__ . '/classes/User.php';
 
-// Gebruiker niet ingelogd? Terugsturen naar loginpagina
-if (!$isLoggedIn) {
+
+// Controleer of de gebruiker is ingelogd
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || !isset($_SESSION['email']) || $_SESSION['email'] === 'admin@admin.com') {
     header('Location: login.php');
     exit();
 }
 
-// Databaseverbinding
-$conn = new PDO('mysql:host=localhost;dbname=webshop_hotairballoons', 'root', '');
+$email = $_SESSION['email'];
 
-// Foutmelding en succesvariabelen
+// Maak database- en gebruikersobjecten
+$database = new Database();
+$conn = $database->getConnection();
+$user = new User($conn);
+
+// Fout- en succesberichten
 $error = '';
 $success = '';
 
-// Haal de huidige gegevens van de gebruiker op
-$stmt = $conn->prepare("SELECT * FROM users WHERE email = :email");
-$stmt->bindValue(':email', $email);
-$stmt->execute();
-$user = $stmt->fetch(PDO::FETCH_ASSOC);
+// Haal de huidige gebruiker op
+$currentUser = $user->getUserByEmail($email);
 
-if (!$user) {
+if (!$currentUser) {
     $error = 'Gebruiker niet gevonden.';
 }
 
-// Als het formulier wordt verzonden
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $newEmail = $_POST['email'];
     $oldPassword = $_POST['old_password'];
-    $newPassword = $_POST['new_password'];
+    $newPassword = !empty($_POST['new_password']) ? password_hash($_POST['new_password'], PASSWORD_DEFAULT) : null;
 
-    // Controleer of het oude wachtwoord klopt
-    if (password_verify($oldPassword, $user['password'])) {
-        if (!empty($newPassword)) {
-            $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT); // Nieuw wachtwoord hashen
+    // Controleer het oude wachtwoord
+    if (password_verify($oldPassword, $currentUser['password'])) {
+        // Controleer of het nieuwe e-mailadres al bestaat
+        if ($newEmail !== $email && $user->emailExists($newEmail)) {
+            $error = 'Dit e-mailadres is al in gebruik.';
         } else {
-            $hashedPassword = $user['password']; // Wachtwoord ongewijzigd laten
-        }
-
-        // Controleer of het e-mailadres is gewijzigd
-        if ($newEmail !== $email) {
-            // Controleer of het nieuwe e-mailadres al bestaat
-            $checkStmt = $conn->prepare("SELECT * FROM users WHERE email = :email");
-            $checkStmt->bindValue(':email', $newEmail);
-            $checkStmt->execute();
-
-            if ($checkStmt->rowCount() > 0) {
-                $error = 'Dit e-mailadres is al in gebruik.';
-            } else {
-                // Bijwerken van het e-mailadres en wachtwoord
-                $updateStmt = $conn->prepare("UPDATE users SET email = :new_email, password = :password WHERE email = :current_email");
-                $updateStmt->bindValue(':new_email', $newEmail);
-                $updateStmt->bindValue(':password', $hashedPassword);
-                $updateStmt->bindValue(':current_email', $email);
-
-                if ($updateStmt->execute()) {
-                    $_SESSION['email'] = $newEmail; // Update de sessievariabele
-                    $email = $newEmail; // Werk de lokale variabele bij
-                    $success = 'Je profiel is succesvol bijgewerkt.';
-                } else {
-                    $error = 'Er ging iets mis bij het bijwerken.';
-                }
-            }
-        } else {
-            // Alleen wachtwoord bijwerken
-            $updateStmt = $conn->prepare("UPDATE users SET password = :password WHERE email = :email");
-            $updateStmt->bindValue(':password', $hashedPassword);
-            $updateStmt->bindValue(':email', $email);
-
-            if ($updateStmt->execute()) {
-                $success = 'Je wachtwoord is succesvol bijgewerkt.';
+            // Update de gebruiker
+            if ($user->updateUser($email, $newEmail, $newPassword)) {
+                $_SESSION['email'] = $newEmail; // Werk de sessie bij
+                $email = $newEmail; // Update de lokale variabele
+                $success = 'Je profiel is succesvol bijgewerkt.';
             } else {
                 $error = 'Er ging iets mis bij het bijwerken.';
             }
@@ -81,6 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -92,7 +65,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <!-- Navbar -->
     <?php
-    // Controleer of de ingelogde gebruiker de admin is
     if ($email === 'admin@admin.com') {
         include_once 'admin-navbar.php';
     } else {
@@ -126,6 +98,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </body>
 </html>
+
+
 
 
 

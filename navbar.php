@@ -24,11 +24,12 @@
 
         <!-- Midden: Zoekbalk -->
         <div class="navbar-center">
-            <form action="search.php" method="GET" class="search-form">
-                <input type="text" name="query" placeholder="Zoek producten..." class="search-input">
-                <button type="submit" class="search-button">Zoeken</button>
-            </form>
-        </div>
+    <form action="search.php" method="GET" class="search-form">
+        <input type="text" name="query" placeholder="Zoek producten..." class="search-input">
+        <button type="submit" class="search-button">Zoeken</button>
+    </form>
+</div>
+
 
         <!-- Rechts: Hamburgermenu -->
         <div class="navbar-right">

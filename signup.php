@@ -1,38 +1,47 @@
 <?php
- $isLoggedIn = isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true;
- $email = isset($_SESSION['email']) ? $_SESSION['email'] : '';
-$error = false; 
+session_start();
+require_once __DIR__ . '/classes/Database.php';
+require_once __DIR__ . '/classes/User.php';
 
-if (!empty($_POST)) {
+// Maak een databaseverbinding
+$database = new Database();
+$conn = $database->getConnection();
+
+// Maak een User-object
+$user = new User($conn);
+
+$error = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-   
-    $conn = new PDO('mysql:host=localhost;dbname=webshop_hotairballoons', 'root', '');
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    // Controleer of het e-mailadres al bestaat
+    $query = "SELECT COUNT(*) FROM users WHERE email = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $stmt->bind_result($emailExists);
+    $stmt->fetch();
+    $stmt->close();
 
-   
-    $statement = $conn->prepare('SELECT COUNT(*) FROM users WHERE email = :email');
-    $statement->bindValue(':email', $email);
-    $statement->execute();
-    $emailExists = $statement->fetchColumn() > 0;
-
-    if ($emailExists) {
+    if ($emailExists > 0) {
         $error = 'This E-mail already exists. Please log in.';
     } else {
-        
-        $options = ['cost' => 12];
-        $hash = password_hash($password, PASSWORD_DEFAULT, $options);
+        // Maak het wachtwoord gehashed
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT, ['cost' => 12]);
 
-        
-        $statement = $conn->prepare('INSERT INTO users(email, password) VALUES(:email, :password)');
-        $statement->bindValue(':email', $email);
-        $statement->bindValue(':password', $hash);
-        $statement->execute();
+        // Voeg de gebruiker toe aan de database
+        $query = "INSERT INTO users (email, password) VALUES (?, ?)";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("ss", $email, $hashedPassword);
 
-       
-        header('Location: login.php');
-        exit;
+        if ($stmt->execute()) {
+            header('Location: login.php');
+            exit();
+        } else {
+            $error = 'Something went wrong. Please try again.';
+        }
     }
 }
 ?>
@@ -64,3 +73,4 @@ if (!empty($_POST)) {
     </div>
 </body>
 </html>
+

@@ -1,5 +1,5 @@
-  /* Algemene styling voor de pagina */
-  body {
+/* Algemene styling voor de pagina */
+body {
     font-family: Arial, sans-serif;
     display: flex;
     justify-content: space-between;
@@ -15,8 +15,8 @@
 
 /* Styling voor de productcontainer */
 .product-container {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid; /* Gebruik grid layout */
+    grid-template-columns: repeat(6, 1fr); /* 6 producten per rij */
     gap: 10px;
     width: 75%;
 }
@@ -60,11 +60,7 @@
     border: 1px solid #ddd;
     padding: 10px;
     border-radius: 8px;
-    width: 200px;
     text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     background-color: #f9f9f9;
 }
 

@@ -1,53 +1,43 @@
 <?php
-	function canLogin($p_email, $p_password){
-		$conn = new PDO('mysql:host=localhost;dbname=webshop_hotairballoons', 'root', '');
-		$statement= $conn->prepare('SELECT * FROM users WHERE email = :email');
-		$statement->bindValue(':email', $p_email);
-		$statement->execute();
-		$user = $statement->fetch(PDO::FETCH_ASSOC);
-		
-		if($user){
-			$hash= $user['password'];
-			if(password_verify($p_password, $hash)){
-				return true;
-			}else{
-				return false;
-			}
-		}
-		else{
-			return false;
-		}
+session_start();
+require_once __DIR__ . '/classes/Database.php';
 
-}
- 
-if (!empty($_POST)) {
+require_once __DIR__ . '/classes/User.php';
+// Maak een databaseverbinding
+$database = new Database();
+$conn = $database->getConnection();
+
+// Maak een User-object
+$user = new User($conn);
+
+$error = false;
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    // Controleer of het admin is
+    // Admin-inlogcontrole
     if ($email === 'admin@admin.com' && $password === 'Admin') {
-        session_start();
         $_SESSION['loggedin'] = true;
         $_SESSION['email'] = $email;
 
-        header('location: index.php');
+        header('Location: index.php');
         exit();
     }
 
-    // Normale logincontrole
-    if (canLogin($email, $password)) {
-        session_start();
+    // Normale gebruikerscontrole
+    if ($user->canLogin($email, $password)) {
         $_SESSION['loggedin'] = true;
         $_SESSION['email'] = $email;
 
-        header('location: index.php');
+        header('Location: index.php');
         exit();
     } else {
         $error = true;
     }
 }
-
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -55,7 +45,6 @@ if (!empty($_POST)) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Page</title>
     <link rel="stylesheet" href="css/login.css">
-  
 </head>
 <body>
     <div class="left"></div>
@@ -68,13 +57,14 @@ if (!empty($_POST)) {
                 <button type="submit">Login</button>
                 <a href="signup.php">Don't have an account yet? Sign up</a>
             </form>
-            <?php if (isset($error) && $error): ?>
+            <?php if ($error): ?>
                 <p>Invalid email or password!</p>
             <?php endif; ?>
         </div>
     </div>
 </body>
 </html>
+
 
 
 

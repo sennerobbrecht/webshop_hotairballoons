@@ -1,25 +1,40 @@
 <?php
 session_start();
-
-// Controleer of de gebruiker is ingelogd
 $isLoggedIn = isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true;
 $email = isset($_SESSION['email']) ? $_SESSION['email'] : '';
 
-if (!$isLoggedIn) {
-    header('Location: login.php');
-    exit();
+// Inclusie van de benodigde klassen
+require_once __DIR__ . '/classes/Database.php';
+require_once __DIR__ . '/classes/Products.php';  // Zorg ervoor dat de naam van de klasse klopt
+
+// Maak verbinding met de database via de Database klasse
+$database = new Database();
+$product = new Product($database);
+
+// Haal de zoekterm op uit de URL
+$query = isset($_GET['query']) ? $_GET['query'] : '';
+
+// Zoek naar producten
+$result = $product->searchProducts($query);
+
+// Controleer of er producten zijn
+$producten = [];
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $producten[] = [
+            'id' => $row['id'],
+            'afbeelding' => $row['image'],
+            'titel' => $row['title'],
+            'beschrijving' => $row['description'],
+            'prijs' => '€' . number_format($row['price'], 2, ',', '.')
+        ];
+    }
+} else {
+    $message = "Geen producten gevonden voor '$query'.";
 }
 
-// Laad de benodigde klassen
-require_once __DIR__ . '/classes/Database.php';
-require_once __DIR__ . '/classes/category.php';
-
-// Initialiseer de database en de Product-klasse
-$db = new Database();
-$productManager = new category($db);
-
-// Haal de producten op voor de categorie 'burners'
-$producten = $productManager->getProductsByCategory('burners');
+// Sluit de databaseverbinding
+$database->closeConnection();
 ?>
 
 <!DOCTYPE html>
@@ -27,10 +42,11 @@ $producten = $productManager->getProductsByCategory('burners');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Branders</title>
+    <title>Zoekresultaten</title>
     <link rel="stylesheet" href="css/category.css">
 </head>
 <body>
+
 <?php
     // Controleer of de ingelogde gebruiker de admin is
     if ($email === 'admin@admin.com') {
@@ -41,7 +57,7 @@ $producten = $productManager->getProductsByCategory('burners');
 ?>
 
 <div class="container">
-    <h1>Branders</h1>
+    <h1>Zoekresultaten voor: <?php echo htmlspecialchars($query); ?></h1>
     <div class="divider"></div>
 
     <!-- Producten -->
@@ -49,7 +65,7 @@ $producten = $productManager->getProductsByCategory('burners');
         <?php if (!empty($producten)): ?>
             <?php foreach ($producten as $product): ?>
                 <div class="product-card">
-                    <!-- Verpak de productkaart in een <a>-tag die naar product.php leidt met het product-ID -->
+                    <!-- Link naar de productpagina -->
                     <a href="product.php?id=<?php echo $product['id']; ?>">
                         <img src="<?php echo htmlspecialchars($product['afbeelding']); ?>" alt="<?php echo htmlspecialchars($product['titel']); ?>">
                         <div class="content">
@@ -61,10 +77,12 @@ $producten = $productManager->getProductsByCategory('burners');
                 </div>
             <?php endforeach; ?>
         <?php else: ?>
-            <p style="text-align: center; font-size: 18px; color: #666;">Er zijn nog geen producten beschikbaar.</p>
+            <p style="text-align: center; font-size: 18px; color: #666;"><?php echo $message ?? 'Geen producten gevonden.'; ?></p>
         <?php endif; ?>
     </div>
 </div>
+
 </body>
 </html>
+
 
