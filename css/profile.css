@@ -1,18 +1,11 @@
-  /* Globale stijl */
-  body {
+
+body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
     margin: 0;
     padding: 0;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
 }
 
-
-
-
-/* Profile-container stijl */
 .container {
     flex: 1;
     display: flex;
@@ -26,7 +19,7 @@
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 400px;
+    max-width: 600px;
 }
 
 .profile-container h2 {
@@ -54,7 +47,7 @@
 
 .profile-container button {
     padding: 10px;
-    background-color:red;
+    background-color: red;
     color: white;
     font-size: 16px;
     border: none;
@@ -78,4 +71,28 @@
 
 .profile-container .message.error {
     color: red;
+}
+
+
+table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: #f4f4f4;
+}
+
+td {
+    background-color: #fff;
 }

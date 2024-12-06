@@ -1,24 +1,38 @@
 <?php
 session_start();
+require_once __DIR__ . '/classes/Database.php';
+require_once __DIR__ . '/classes/User.php';
 
-// Controleer of de gebruiker is ingelogd
-$isLoggedIn = isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true;
-$email = isset($_SESSION['email']) ? $_SESSION['email'] : '';
 
-if (!$isLoggedIn) {
+$database = new Database();
+$conn = $database->getConnection();
+$user = new User($conn);
+
+
+if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {
+ 
+    $email = $_SESSION['email'];
+    $userDetails = $user->getUserByEmail($email);
+
+  
+    if ($userDetails) {
+        $_SESSION['balance'] = $userDetails['balance'] ?? 1000;  
+    }
+} else {
+   
     header('Location: login.php');
     exit();
 }
 
-// Laad de benodigde klassen
+
 require_once __DIR__ . '/classes/Database.php';
 require_once __DIR__ . '/classes/category.php';
 
-// Initialiseer de database en de Product-klasse
+
 $db = new Database();
 $productManager = new category($db);
 
-// Haal de producten op voor de categorie 'Enveloppes'
+
 $producten = $productManager->getProductsByCategory('Enveloppes');
 ?>
 
@@ -32,7 +46,7 @@ $producten = $productManager->getProductsByCategory('Enveloppes');
 </head>
 <body>
 <?php
-    // Controleer of de ingelogde gebruiker de admin is
+   
     if ($email === 'admin@admin.com') {
         include_once 'admin-navbar.php';
     } else {
@@ -44,12 +58,12 @@ $producten = $productManager->getProductsByCategory('Enveloppes');
     <h1>Enveloppes</h1>
     <div class="divider"></div>
 
-    <!-- Producten -->
+
     <div class="product-grid">
         <?php if (!empty($producten)): ?>
             <?php foreach ($producten as $product): ?>
                 <div class="product-card">
-                    <!-- Verpak de productkaart in een <a>-tag die naar product.php leidt met het product-ID -->
+                  
                     <a href="product.php?id=<?php echo $product['id']; ?>">
                         <img src="<?php echo htmlspecialchars($product['afbeelding']); ?>" alt="<?php echo htmlspecialchars($product['titel']); ?>">
                         <div class="content">

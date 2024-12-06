@@ -3,11 +3,11 @@ session_start();
 require_once __DIR__ . '/classes/Database.php';
 
 require_once __DIR__ . '/classes/User.php';
-// Maak een databaseverbinding
+
 $database = new Database();
 $conn = $database->getConnection();
 
-// Maak een User-object
+
 $user = new User($conn);
 
 $error = false;
@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    // Admin-inlogcontrole
+   
     if ($email === 'admin@admin.com' && $password === 'Admin') {
         $_SESSION['loggedin'] = true;
         $_SESSION['email'] = $email;
@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    // Normale gebruikerscontrole
+    
     if ($user->canLogin($email, $password)) {
         $_SESSION['loggedin'] = true;
         $_SESSION['email'] = $email;

@@ -1,26 +1,26 @@
-/* Algemene stijl */
+
 .bodyindex {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
 }
 
-/* Navbar */
+
 .navbar {
     background-color: red;
-    padding: 10px 20px;
+    padding: 10px 10px;
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
-/* Links: Welkom bericht */
+
 .navbar-left .welcome {
     color: white;
     font-size: 18px;
 }
 
-/* Midden: Zoekbalk */
+
 .navbar-center .search-form {
     display: flex;
     gap: 10px;
@@ -46,7 +46,6 @@
     background-color: #ffcccc;
 }
 
-/* Hamburger Menu */
 .hamburger-menu {
     display: flex;
     flex-direction: column;
@@ -54,7 +53,11 @@
     width: 30px;
     height: 25px;
     cursor: pointer;
+    margin-left: 40px; 
+    margin-right: 0;
+    right: 20px;
 }
+
 
 .hamburger-menu .line {
     width: 100%;
@@ -63,11 +66,11 @@
     border-radius: 2px;
 }
 
-/* Sidebar */
+
 .sidebar {
     position: fixed;
     top: 0;
-    right: -360px; /* Start buiten het scherm */
+    right: -360px; 
     width: 300px;
     height: 100%;
     background-color: white;
@@ -76,11 +79,11 @@
     flex-direction: column;
     gap: 15px;
     padding: 20px;
-    transition: right 0.3s ease; /* Gladde overgang */
+    transition: right 0.3s ease; 
     z-index: 1000;
 }
 
-/* Sidebar links */
+
 .sidebar a {
     text-decoration: none;
     font-size: 18px;
@@ -93,7 +96,7 @@
     background-color: #ffcccc;
 }
 
-/* Sluit-knop */
+
 .sidebar .close-btn {
     font-size: 30px;
     color: red;
@@ -101,12 +104,12 @@
     cursor: pointer;
 }
 
-/* Sidebar zichtbaar */
+
 .sidebar.show {
-    right: 0; /* Schuif naar binnen */
+    right: 0; 
 }
 
-/* Algemene instellingen */
+
 body {
     margin: 0;
     font-family: Arial, sans-serif;
@@ -127,7 +130,7 @@ body {
     margin: 20px 0;
 }
 
-/* Hero sectie */
+
 .hero {
     text-align: center;
     padding: 30px 20px;
@@ -153,7 +156,7 @@ body {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Laatst toegevoegd sectie */
+
 .latest-products .product-grid {
     display: flex;
     flex-wrap: wrap;
@@ -162,7 +165,6 @@ body {
     padding: 0 20px;
 }
 
-/* Product carrousel */
 .carousel-container {
     display: flex;
     align-items: center;
@@ -177,16 +179,16 @@ body {
     gap: 20px;
 }
 
-/* Zorg dat de producten naast elkaar komen */
+
 .products-grid {
-    display: grid; /* Gebruik een grid layout */
-    grid-template-columns: repeat(4, 1fr); /* 4 producten per rij */
-    gap: 20px; /* Ruimte tussen de items */
-    margin: 0 auto; /* Dit zorgt ervoor dat de grid gecentreerd wordt */
-    max-width: 1200px; /* Limiteer de breedte van de grid */
+    display: grid; 
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 20px;
+    margin: 0 auto; 
+    max-width: 1200px;
 }
 
-/* Productkaart stijl */
+
 .product-card {
     border: 1px solid #ddd;
     border-radius: 5px;
@@ -196,40 +198,38 @@ body {
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Product afbeelding */
+
 .product-card img {
     max-width: 100%;
-    height: 150px; /* Zorg voor uniforme afbeeldinghoogte */
+    height: 150px;
     object-fit: cover;
     border-radius: 5px;
 }
 
-/* Product titel */
 .product-title {
     font-size: 18px;
     margin: 10px 0;
 }
 
-/* Product prijs */
 .product-price {
     font-weight: bold;
     color: #2c7a7b;
 }
 
-/* Media query voor responsiviteit */
+
 @media (max-width: 768px) {
     .products-grid {
-        grid-template-columns: repeat(2, 1fr); /* 2 producten per rij op kleinere schermen */
+        grid-template-columns: repeat(2, 1fr); 
     }
 }
 
 @media (max-width: 480px) {
     .products-grid {
-        grid-template-columns: 1fr; /* 1 product per rij op zeer kleine schermen */
+        grid-template-columns: 1fr;
     }
 }
 
-/* Pijltjes voor carrousel */
+
 .carousel-button {
     position: absolute;
     top: 50%;
@@ -251,7 +251,7 @@ body {
     right: 10px;
 }
 
-/* Categorieën sectie */
+
 .categories .category-grid {
     display: flex;
     flex-wrap: wrap;
@@ -261,31 +261,31 @@ body {
 }
 
 .category-card {
-    width: calc(50% - 20px); /* Zorg ervoor dat de categorieën per 2 naast elkaar komen */
+    width: calc(50% - 20px); 
     text-align: center;
     background-color: white;
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Toevoegen van animatie bij hover */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .category-card:hover {
-    transform: scale(1.05); /* Effect bij hover, de kaart wordt iets groter */
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Versterk schaduw bij hover */
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); 
 }
 
 .category-card img {
-    width: 100%;               /* Zorg ervoor dat de afbeelding de volledige breedte van de container inneemt */
-    height: 200px;             /* Stel een vaste hoogte in voor de afbeelding */
-    object-fit: cover;         /* Zorg ervoor dat de afbeelding de container vult zonder vervorming */
-    border-radius: 4px;        /* Afronding van de afbeelding */
-    transition: transform 0.3s ease; /* Voeg overgang toe bij hover voor een leuk effect */
+    width: 100%;              
+    height: 200px;           
+    object-fit: cover;        
+    border-radius: 4px;     
+    transition: transform 0.3s ease; 
 }
 
 .category-card img:hover {
-    transform: scale(1.1); /* Vergroot de afbeelding bij hover */
+    transform: scale(1.1); 
 }
 
 .category-card a {
@@ -300,13 +300,13 @@ body {
     color: #333;
 }
 
-/* Filterformulier centraal plaatsen */
+
 .all-products form {
     display: flex;
-    justify-content: center; /* Horizontaal centreren */
-    align-items: center; /* Verticaal centreren */
-    gap: 10px; /* Voeg ruimte toe tussen de elementen */
-    margin-bottom: 30px; /* Ruimte tussen formulier en producten */
+    justify-content: center; 
+    align-items: center; 
+    gap: 10px; 
+    margin-bottom: 30px; 
 }
 
 #category {
@@ -316,10 +316,15 @@ body {
     border: 1px solid #ddd;
 }
 
-/* Algemene styling voor de producten en formulier voor consistentie */
+
 .all-products {
     padding: 0 20px;
-    text-align: center; /* Zorg ervoor dat de tekst (zoals titels) ook gecentreerd is */
+    text-align: center; 
+}
+
+.admin-balance{
+    color: white;
+    margin-left: 20px;
 }
 
 

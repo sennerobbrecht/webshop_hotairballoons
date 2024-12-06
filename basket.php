@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-// Controleer of de gebruiker is ingelogd
+
 $isLoggedIn = isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true;
 $email = isset($_SESSION['email']) ? $_SESSION['email'] : '';
 
@@ -10,15 +10,15 @@ if (!$isLoggedIn) {
     exit();
 }
 
-// Laad de benodigde klassen
+
 require_once __DIR__ . '/classes/Database.php';
 require_once __DIR__ . '/classes/category.php';
 
-// Initialiseer de database en de Product-klasse
+
 $db = new Database();
 $productManager = new category($db);
 
-// Haal de producten op voor de categorie 'Manden'
+
 $producten = $productManager->getProductsByCategory('Manden');
 ?>
 
@@ -32,7 +32,7 @@ $producten = $productManager->getProductsByCategory('Manden');
 </head>
 <body>
 <?php
-    // Controleer of de ingelogde gebruiker de admin is
+  
     if ($email === 'admin@admin.com') {
         include_once 'admin-navbar.php';
     } else {
@@ -44,12 +44,12 @@ $producten = $productManager->getProductsByCategory('Manden');
     <h1>Manden</h1>
     <div class="divider"></div>
 
-    <!-- Producten -->
+
     <div class="product-grid">
         <?php if (!empty($producten)): ?>
             <?php foreach ($producten as $product): ?>
                 <div class="product-card">
-                    <!-- Verpak de productkaart in een <a>-tag die naar product.php leidt met het product-ID -->
+                   
                     <a href="product.php?id=<?php echo $product['id']; ?>">
                         <img src="<?php echo htmlspecialchars($product['afbeelding']); ?>" alt="<?php echo htmlspecialchars($product['titel']); ?>">
                         <div class="content">

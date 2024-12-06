@@ -1,0 +1,16 @@
+{
+    "name": "senne/webshop_hotairballoons",
+    "autoload": {
+        "psr-4": {
+            "WebshopHotairballoons\\": "classes/"
+        }
+    },
+    "authors": [
+        {
+            "name": "sennerobbrecht",
+            "email": "senne.robbrecht@outlook.be"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}

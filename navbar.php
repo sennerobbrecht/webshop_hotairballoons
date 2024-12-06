@@ -1,11 +1,15 @@
 <?php
+$isLoggedIn = isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true;
+$email = isset($_SESSION['email']) ? $_SESSION['email'] : '';
 
-    $isLoggedIn = isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true;
-    $email = isset($_SESSION['email']) ? $_SESSION['email'] : '';
-   
-    ?>
+if (!$isLoggedIn) {
+    header('Location: login.php');
+    exit();
+}
 
 
+$balance = $_SESSION['balance'] ?? 1000;
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -17,21 +21,23 @@
 </head>
 <body class="bodyindex">
     <nav class="navbar">
-        <!-- Links: Welkom bericht -->
+       
         <div class="navbar-left">
             <span class="welcome">Hi <?php echo htmlspecialchars(explode('@', $_SESSION['email'])[0]); ?>!</span>
+            <?php ?>
+                <span class="admin-balance">Saldo: €<?php echo number_format($balance, 2, ',', '.'); ?></span>
+            <?php  ?>
         </div>
 
-        <!-- Midden: Zoekbalk -->
+      
         <div class="navbar-center">
-    <form action="search.php" method="GET" class="search-form">
-        <input type="text" name="query" placeholder="Zoek producten..." class="search-input">
-        <button type="submit" class="search-button">Zoeken</button>
-    </form>
-</div>
+            <form action="search.php" method="GET" class="search-form">
+                <input type="text" name="query" placeholder="Zoek producten..." class="search-input">
+                <button type="submit" class="search-button">Zoeken</button>
+            </form>
+        </div>
 
-
-        <!-- Rechts: Hamburgermenu -->
+      
         <div class="navbar-right">
             <div class="hamburger-menu" id="hamburgerMenu">
                 <div class="line"></div>
@@ -41,7 +47,7 @@
         </div>
     </nav>
 
-    <!-- Sidebar -->
+  
     <div class="sidebar" id="sidebar">
         <div class="close-btn" id="closeBtn">&times;</div>
         <a href="index.php">Home</a>
@@ -52,12 +58,16 @@
         <a href="burners.php">Branders</a>
         <a href="profile.php">Profiel</a>
         <a href="shopping_cart.php">Winkelmand</a>
+      
         <a href="logout.php">Uitloggen</a>
     </div>
 
     <script src="javascript/navbar.js"></script>
 </body>
 </html>
+
+
+
 
 
 

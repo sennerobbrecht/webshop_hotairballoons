@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-// Controleer of de gebruiker is ingelogd
+
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     header('Location: login.php');
     exit();
@@ -9,16 +9,16 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
 $email = $_SESSION['email'] ?? '';
 
-// Klassen laden
+
 require_once __DIR__ . '/classes/Database.php';
 require_once __DIR__ . '/classes/category.php';
 
 
-// Initialiseer de database en productklasse
+
 $db = new Database();
 $productManager = new Category($db);
 
-// Haal producten op voor de categorie "Accessoires"
+
 $producten = $productManager->getProductsByCategory('Accessoires');
 ?>
 
@@ -32,7 +32,7 @@ $producten = $productManager->getProductsByCategory('Accessoires');
 </head>
 <body>
 <?php
-    // Controleer of de ingelogde gebruiker de admin is
+   
     if ($email === 'admin@admin.com') {
         include_once 'admin-navbar.php';
     } else {
@@ -44,12 +44,12 @@ $producten = $productManager->getProductsByCategory('Accessoires');
     <h1>Accessoires</h1>
     <div class="divider"></div>
 
-    <!-- Producten -->
+   
     <div class="product-grid">
         <?php if (!empty($producten)): ?>
             <?php foreach ($producten as $product): ?>
                 <div class="product-card">
-                    <!-- Voeg een link toe rondom de productafbeelding en titel -->
+                    
                     <a href="product.php?id=<?php echo urlencode($product['id']); ?>">
                         <img src="<?php echo htmlspecialchars($product['afbeelding']); ?>" alt="<?php echo htmlspecialchars($product['titel']); ?>">
                         <div class="content">
@@ -58,7 +58,7 @@ $producten = $productManager->getProductsByCategory('Accessoires');
                             <div class="price"><?php echo htmlspecialchars($product['prijs']); ?></div>
                         </div>
                     </a>
-                    <button>Voeg toe</button>
+                   
                 </div>
             <?php endforeach; ?>
         <?php else: ?>

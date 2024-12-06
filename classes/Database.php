@@ -1,5 +1,6 @@
 <?php
 
+
 class Database
 {
     private $conn;
@@ -8,25 +9,25 @@ class Database
     {
         $servername = "localhost";
         $username = "root";
-        $password = ""; // Je database-wachtwoord
+        $password = "";
         $database = "webshop_hotairballoons";
 
-        // Maak verbinding
+       
         $this->conn = new mysqli($servername, $username, $password, $database);
 
-        // Controleer de verbinding
+      
         if ($this->conn->connect_error) {
             die("Verbinding mislukt: " . $this->conn->connect_error);
         }
     }
 
-    // Verkrijg de databaseverbinding
+
     public function getConnection()
     {
         return $this->conn;
     }
 
-    // Sluit de databaseverbinding
+   
     public function closeConnection()
     {
         if ($this->conn) {

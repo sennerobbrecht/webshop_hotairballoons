@@ -32,7 +32,7 @@ $producten = $productManager->getProductsByCategory('burners');
 </head>
 <body>
 <?php
-    // Controleer of de ingelogde gebruiker de admin is
+   
     if ($email === 'admin@admin.com') {
         include_once 'admin-navbar.php';
     } else {
@@ -44,12 +44,11 @@ $producten = $productManager->getProductsByCategory('burners');
     <h1>Branders</h1>
     <div class="divider"></div>
 
-    <!-- Producten -->
     <div class="product-grid">
         <?php if (!empty($producten)): ?>
             <?php foreach ($producten as $product): ?>
                 <div class="product-card">
-                    <!-- Verpak de productkaart in een <a>-tag die naar product.php leidt met het product-ID -->
+                 
                     <a href="product.php?id=<?php echo $product['id']; ?>">
                         <img src="<?php echo htmlspecialchars($product['afbeelding']); ?>" alt="<?php echo htmlspecialchars($product['titel']); ?>">
                         <div class="content">

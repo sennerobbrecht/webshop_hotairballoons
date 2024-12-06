@@ -13,12 +13,12 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : '';
 </head>
 <body class="bodyindex">
     <nav class="navbar">
-        <!-- Links: Welkom bericht -->
+      
         <div class="navbar-left">
             <span class="welcome">Hi <?php echo htmlspecialchars(explode('@', $_SESSION['email'])[0]); ?>!</span>
         </div>
 
-        <!-- Midden: Zoekbalk -->
+      
         <div class="navbar-center">
             <form action="search.php" method="GET" class="search-form">
                 <input type="text" name="query" placeholder="Zoek producten..." class="search-input">
@@ -26,7 +26,6 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : '';
             </form>
         </div>
 
-        <!-- Rechts: Hamburgermenu -->
         <div class="navbar-right">
             <div class="hamburger-menu" id="hamburgerMenu">
                 <div class="line"></div>
@@ -36,7 +35,7 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : '';
         </div>
     </nav>
 
-    <!-- Sidebar -->
+   
     <div class="sidebar" id="sidebar">
         <div class="close-btn" id="closeBtn">&times;</div>
         <a href="index.php">Home</a>
@@ -46,12 +45,13 @@ $email = isset($_SESSION['email']) ? $_SESSION['email'] : '';
         <a href="accessoires.php">Accessoires</a>
         <a href="burners.php">Branders</a>
         <a href="products.php">Mijn Producten</a>
+        <a href="orders.php">orders</a>
         <a href="logout.php">Uitloggen</a>
     </div>
 
-    <!-- Content Section -->
+ 
     <div class="container">
-        <!-- Voeg hier de inhoud van de pagina toe -->
+     
     </div>
 
     <script src="javascript/navbar.js"></script>

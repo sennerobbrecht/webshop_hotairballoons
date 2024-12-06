@@ -3,21 +3,20 @@ session_start();
 $isLoggedIn = isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true;
 $email = isset($_SESSION['email']) ? $_SESSION['email'] : '';
 
-// Inclusie van de benodigde klassen
 require_once __DIR__ . '/classes/Database.php';
-require_once __DIR__ . '/classes/Products.php';  // Zorg ervoor dat de naam van de klasse klopt
+require_once __DIR__ . '/classes/Products.php'; 
 
-// Maak verbinding met de database via de Database klasse
+
 $database = new Database();
 $product = new Product($database);
 
-// Haal de zoekterm op uit de URL
+
 $query = isset($_GET['query']) ? $_GET['query'] : '';
 
-// Zoek naar producten
+
 $result = $product->searchProducts($query);
 
-// Controleer of er producten zijn
+
 $producten = [];
 if ($result->num_rows > 0) {
     while ($row = $result->fetch_assoc()) {
@@ -33,7 +32,7 @@ if ($result->num_rows > 0) {
     $message = "Geen producten gevonden voor '$query'.";
 }
 
-// Sluit de databaseverbinding
+
 $database->closeConnection();
 ?>
 
@@ -48,7 +47,7 @@ $database->closeConnection();
 <body>
 
 <?php
-    // Controleer of de ingelogde gebruiker de admin is
+    
     if ($email === 'admin@admin.com') {
         include_once 'admin-navbar.php';
     } else {
@@ -60,12 +59,12 @@ $database->closeConnection();
     <h1>Zoekresultaten voor: <?php echo htmlspecialchars($query); ?></h1>
     <div class="divider"></div>
 
-    <!-- Producten -->
+  
     <div class="product-grid">
         <?php if (!empty($producten)): ?>
             <?php foreach ($producten as $product): ?>
                 <div class="product-card">
-                    <!-- Link naar de productpagina -->
+               
                     <a href="product.php?id=<?php echo $product['id']; ?>">
                         <img src="<?php echo htmlspecialchars($product['afbeelding']); ?>" alt="<?php echo htmlspecialchars($product['titel']); ?>">
                         <div class="content">

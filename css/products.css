@@ -1,37 +1,42 @@
-/* Algemene styling voor de pagina */
+
 body {
     font-family: Arial, sans-serif;
     display: flex;
-    justify-content: space-between;
-    margin: 20px;
+    justify-content: flex-start;
+    margin: 0;
+    padding: 0; 
 }
+
 
 .container {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    align-items: flex-start; 
+    gap: 20px; 
     width: 100%;
+    margin: 0 auto; 
 }
 
-/* Styling voor de productcontainer */
 .product-container {
-    display: grid; /* Gebruik grid layout */
-    grid-template-columns: repeat(6, 1fr); /* 6 producten per rij */
+    display: grid;
+    grid-template-columns: repeat(6, 1fr); 
     gap: 10px;
-    width: 75%;
+    width: 80%; 
+    margin-left: 0;
+    margin-right: auto; 
 }
 
-/* Styling voor de knop om een nieuw product toe te voegen */
 .add-button-container {
-    width: 20%;
+    width: 15%; 
     text-align: center;
     border: 2px dashed #ddd;
     padding: 20px;
     border-radius: 8px;
-    margin-left: 20px;
     gap: 10px;
     position: relative;
+    margin-left: 0; 
 }
+
 
 .add-button {
     background-color: red;
@@ -52,10 +57,10 @@ body {
     font-size: 14px;
     font-weight: bold;
     color: #333;
-    margin-top: 70px; /* Zorg ervoor dat de tekst niet in de knop zit */
+    margin-top: 70px;
 }
 
-/* Styling voor de individuele producten */
+
 .product {
     border: 1px solid #ddd;
     padding: 10px;
@@ -87,7 +92,6 @@ body {
     background-color: darkred;
 }
 
-/* Popup modal voor het toevoegen van producten */
 .popup {
     display: none;
     position: fixed;
@@ -102,7 +106,7 @@ body {
     animation: fadeIn 0.3s ease-in-out;
 }
 
-/* Inhoud van de popup */
+
 .popup-content {
     background-color: white;
     padding: 30px;
@@ -139,7 +143,59 @@ body {
     background-color: darkred;
 }
 
-/* Animaties voor het popupvenster */
+
+nav {
+    position: fixed; 
+    top: 0;
+    left: 0;
+    width: 100%; 
+    background-color: #333; 
+    color: white; 
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    padding: 10px 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
+}
+
+nav {
+    position: fixed; 
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: #333;
+    color: white; 
+    z-index: 1000; 
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    padding: 0px 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
+}
+
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 15px; 
+    font-size: 16px;
+    transition: color 0.3s; 
+}
+
+nav a:hover {
+    color: #FFD700; 
+}
+
+
+.container {
+    margin-top: 60px; 
+}
+
+
+
+
+
 @keyframes fadeIn {
     0% { opacity: 0; }
     100% { opacity: 1; }

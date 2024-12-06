@@ -1,4 +1,4 @@
-/* Algemene pagina-instellingen */
+
 body {
     font-family: 'Arial', sans-serif;
     margin: 0;
@@ -36,7 +36,7 @@ nav ul li a:hover {
     color: #e74c3c;
 }
 
-/* Productpagina */
+
 .product-page {
     display: flex;
     justify-content: center;
@@ -90,7 +90,7 @@ nav ul li a:hover {
     margin-bottom: 20px;
 }
 
-/* Knop om toe te voegen aan winkelwagentje */
+
 .add-to-cart-btn {
     padding: 15px 30px;
     font-size: 1.2em;
@@ -112,7 +112,37 @@ nav ul li a:hover {
     transform: scale(1);
 }
 
-/* Responisve design voor mobiele apparaten */
+#notification-popup {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: red;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+#notification-popup.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+#notification-popup.hidden {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+}
+
+
+
+
 @media (max-width: 768px) {
     .product-page {
         flex-direction: column;

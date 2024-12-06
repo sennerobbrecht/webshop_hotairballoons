@@ -1,7 +1,9 @@
 <?php 
 session_start();
 
-// Controleer of de gebruiker is ingelogd
+
+
+
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     header('Location: login.php');
     exit();
@@ -9,10 +11,10 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
 $email = $_SESSION['email'] ?? '';
 
-// Laad de benodigde klassen
+
 require_once __DIR__ . '/classes/Database.php';
 require_once __DIR__ . '/classes/Products.php';
-// Maak een databaseverbinding en laad de Productklasse
+
 $db = new Database();
 $productManager = new Product($db);
 ?>
@@ -27,7 +29,7 @@ $productManager = new Product($db);
 </head>
 <body>
 <?php
-    // Controleer of de ingelogde gebruiker de admin is
+    
     if ($email === 'admin@admin.com') {
         include_once 'admin-navbar.php';
     } else {
@@ -35,7 +37,7 @@ $productManager = new Product($db);
     }
 ?>
 
-<!-- Hoofdtitel en afbeelding -->
+
 <section class="hero">
     <h1 class="hero-title">Welkom in onze webshop!</h1>
     <div class="hero-image">
@@ -51,7 +53,7 @@ $productManager = new Product($db);
         <button class="carousel-button left" onclick="scrollCarousel(-1)">&#10094;</button>
         <div class="product-carousel">
             <?php
-            // Haal de laatste 5 producten op
+         
             $latestProductsResult = $productManager->getLatestProducts();
 
             if ($latestProductsResult->num_rows > 0) {
@@ -72,7 +74,7 @@ $productManager = new Product($db);
 
 <hr class="section-divider">
 
-<!-- Alle artikelen met filter dropdown -->
+
 <section class="all-products">
     <h2 class="section-title">Alle artikelen</h2>
 
@@ -91,11 +93,11 @@ $productManager = new Product($db);
 
     <div class="products-grid">
         <?php
-        // Haal producten op volgens de geselecteerde categorie
+        
         $category = isset($_GET['category']) ? $_GET['category'] : '';
         $allProductsResult = $productManager->getProductsByCategory($category);
 
-        // Toon de producten
+      
         if ($allProductsResult->num_rows > 0) {
             while ($product = $allProductsResult->fetch_assoc()) {
                 echo '<div class="product-card">';

@@ -11,6 +11,7 @@ class Category
 
     public function getProductsByCategory($category)
     {
+        
         $stmt = $this->db->prepare("SELECT id, image, title, description, price FROM products WHERE category = ?");
         $stmt->bind_param("s", $category);
         $stmt->execute();
@@ -18,6 +19,7 @@ class Category
         $result = $stmt->get_result();
         $producten = [];
 
+       
         if ($result->num_rows > 0) {
             while ($row = $result->fetch_assoc()) {
                 $producten[] = [
@@ -33,3 +35,7 @@ class Category
         return $producten;
     }
 }
+
+?>
+
+

@@ -19,8 +19,23 @@ class User
         if ($result->num_rows === 1) {
             $user = $result->fetch_assoc();
             if (password_verify($password, $user['password'])) {
-                return true;
+                return $user;
             }
+        }
+        return false;
+    }
+
+    public function register($email, $password)
+    {
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT, ['cost' => 12]);
+
+       
+        $query = "INSERT INTO users (email, password) VALUES (?, ?)";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("ss", $email, $hashedPassword);
+
+        if ($stmt->execute()) {
+            return $this->conn->insert_id; 
         }
         return false;
     }
@@ -34,26 +49,8 @@ class User
         $result = $stmt->get_result();
         return $result->fetch_assoc();
     }
-
-    public function emailExists($email)
-    {
-        $query = "SELECT COUNT(*) FROM users WHERE email = ?";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $stmt->bind_result($count);
-        $stmt->fetch();
-        return $count > 0;
-    }
-
-    public function updateUser($currentEmail, $newEmail, $newPassword = null)
-    {
-        $query = "UPDATE users SET email = ?, password = COALESCE(?, password) WHERE email = ?";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("sss", $newEmail, $newPassword, $currentEmail);
-        return $stmt->execute();
-    }
 }
 ?>
+
 
 

@@ -2,9 +2,9 @@
 session_start();
 require_once __DIR__ . '/classes/Database.php';
 require_once __DIR__ . '/classes/User.php';
+require_once __DIR__ . '/classes/Order.php';  
 
 
-// Controleer of de gebruiker is ingelogd
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || !isset($_SESSION['email']) || $_SESSION['email'] === 'admin@admin.com') {
     header('Location: login.php');
     exit();
@@ -12,50 +12,27 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || !isset($_
 
 $email = $_SESSION['email'];
 
-// Maak database- en gebruikersobjecten
+
 $database = new Database();
 $conn = $database->getConnection();
 $user = new User($conn);
+$order = new Order($conn);
 
-// Fout- en succesberichten
+
 $error = '';
 $success = '';
 
-// Haal de huidige gebruiker op
 $currentUser = $user->getUserByEmail($email);
 
 if (!$currentUser) {
     $error = 'Gebruiker niet gevonden.';
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $newEmail = $_POST['email'];
-    $oldPassword = $_POST['old_password'];
-    $newPassword = !empty($_POST['new_password']) ? password_hash($_POST['new_password'], PASSWORD_DEFAULT) : null;
-
-    // Controleer het oude wachtwoord
-    if (password_verify($oldPassword, $currentUser['password'])) {
-        // Controleer of het nieuwe e-mailadres al bestaat
-        if ($newEmail !== $email && $user->emailExists($newEmail)) {
-            $error = 'Dit e-mailadres is al in gebruik.';
-        } else {
-            // Update de gebruiker
-            if ($user->updateUser($email, $newEmail, $newPassword)) {
-                $_SESSION['email'] = $newEmail; // Werk de sessie bij
-                $email = $newEmail; // Update de lokale variabele
-                $success = 'Je profiel is succesvol bijgewerkt.';
-            } else {
-                $error = 'Er ging iets mis bij het bijwerken.';
-            }
-        }
-    } else {
-        $error = 'Het oude wachtwoord is onjuist.';
-    }
-}
+$orders = $order->getOrdersByEmail($email);
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -63,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="css/profile.css">
 </head>
 <body>
-    <!-- Navbar -->
+ 
     <?php
     if ($email === 'admin@admin.com') {
         include_once 'admin-navbar.php';
@@ -72,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     ?>
 
-    <!-- Profielkader -->
+  
     <div class="container">
         <div class="profile-container">
             <h2>Mijn Profiel</h2>
@@ -94,10 +71,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php if (!empty($success)): ?>
                 <p class="message success"><?php echo htmlspecialchars($success); ?></p>
             <?php endif; ?>
+
+           
+            <h3>Mijn Bestellingen</h3>
+            <?php if (!empty($orders)): ?>
+                <table>
+                    <thead>
+                        <tr>
+                          
+                            <th>Product Naam</th>
+                            <th>Hoeveelheid</th>
+                            <th> Bedrag</th>
+                          
+                            <th>Besteldatum</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($orders as $orderItem): ?>
+                            
+                                <td><?php echo isset($orderItem['product_name']) ? htmlspecialchars($orderItem['product_name']) : 'Onbekend'; ?></td>
+                                <td><?php echo isset($orderItem['quantity']) ? htmlspecialchars($orderItem['quantity']) : '0'; ?></td>
+                               
+                                <td>€<?php echo number_format($orderItem['price'] * $orderItem['quantity'], 2, ',', '.'); ?></td>
+                                <td><?php echo htmlspecialchars($orderItem['created_at']); ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php else: ?>
+                <p>Je hebt nog geen bestellingen geplaatst.</p>
+            <?php endif; ?>
         </div>
     </div>
 </body>
 </html>
+
+
 
 
 
