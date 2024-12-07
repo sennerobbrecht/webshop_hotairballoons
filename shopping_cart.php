@@ -9,25 +9,24 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     exit();
 }
 
-// Database connectie
+
 $database = new Database();
 $db = $database->getConnection();
 
-// Gebruikersgegevens ophalen
+
 $email = $_SESSION['email'] ?? '';
 $query = $db->prepare("SELECT balance FROM users WHERE email = ?");
-$query->bind_param("s", $email); // Bind de parameter (string)
+$query->bind_param("s", $email); 
 $query->execute();
 $result = $query->get_result();
 $user = $result->fetch_assoc();
 
-$balance = $user['balance'] ?? 0; // Default saldo is 0 indien niet aanwezig
+$balance = $user['balance'] ?? 0; 
 
-// Winkelwagen
 $cart = new Cart();
-$totalAmount = $cart->calculateTotal(); // Bereken het totale bedrag van de winkelwagen
+$totalAmount = $cart->calculateTotal(); 
 
-// Product verwijderen uit winkelwagen
+
 if (isset($_GET['remove']) && is_numeric($_GET['remove'])) {
     $productId = intval($_GET['remove']);
     $cart->removeItem($productId);
@@ -35,12 +34,12 @@ if (isset($_GET['remove']) && is_numeric($_GET['remove'])) {
     exit();
 }
 
-// Bestelling plaatsen
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_order'])) {
     if ($totalAmount > $balance) {
         echo '<script>alert("Onvoldoende saldo om de bestelling te plaatsen.");</script>';
     } else {
-        // Bestelgegevens ophalen
+      
         $orderEmail = $_POST['email'];
         $country = $_POST['country'];
         $city = $_POST['city'];
@@ -48,22 +47,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_order'])) {
         $address = $_POST['address'];
         $houseNumber = $_POST['houseNumber'];
 
-        // Nieuwe bestelling aanmaken
+      
         $order = new Order($db);
         $orderId = $order->placeOrder($orderEmail, $country, $city, $postalCode, $address, $houseNumber, $totalAmount);
 
-        // Voeg producten toe aan de bestelling
+      
         foreach ($cart->getCart() as $productId => $item) {
             $order->addOrderItem($orderId, $productId, $item['title'], $item['quantity'], $item['price']);
         }
 
-        // Saldo berekenen en updaten
+       
         $newBalance = $balance - $totalAmount;
         $updateBalance = $db->prepare("UPDATE users SET balance = ? WHERE email = ?");
         $updateBalance->bind_param("ds", $newBalance, $email); // d = double, s = string
         $updateBalance->execute();
 
-        // Winkelwagen legen
+       
         $_SESSION['cart'] = [];
         $_SESSION['balance'] = $newBalance;
 
