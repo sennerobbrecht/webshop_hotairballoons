@@ -1,92 +1,99 @@
 <?php
+class Product {
+    private $conn;
 
-class Product
-{
-    private $db;
-
-    public function __construct(Database $database)
-    {
-        $this->db = $database->getConnection();
+    // Constructor accepts PDO object
+    public function __construct(PDO $dbConnection) {
+        $this->conn = $dbConnection;
     }
 
-    public function addProduct($title, $category, $description, $price, $imagePath)
-    {
-        $stmt = $this->db->prepare("INSERT INTO products (title, category, description, price, image, created_at) VALUES (?, ?, ?, ?, ?, ?)");
-$stmt->bind_param("sssdss", $title, $category, $description, $price, $imagePath, $createdAt);
-
-        return $stmt->execute();
-    }
-
-    public function updateProduct($id, $title, $category, $description, $price, $imagePath = null)
-    {
-        if (!empty($imagePath)) {
-            $query = "UPDATE products SET title = ?, category = ?, description = ?, price = ?, image = ? WHERE id = ?";
-            $stmt = $this->db->prepare($query);
-            $stmt->bind_param("sssdsi", $title, $category, $description, $price, $imagePath, $id);
-        } else {
-            $query = "UPDATE products SET title = ?, category = ?, description = ?, price = ? WHERE id = ?";
-            $stmt = $this->db->prepare($query);
-            $stmt->bind_param("sssdi", $title, $category, $description, $price, $id);
-        }
-
-        return $stmt->execute();
-    }
-
-    public function deleteProduct($id)
-    {
-        $stmt = $this->db->prepare("DELETE FROM products WHERE id = ?");
-        $stmt->bind_param("i", $id);
-        return $stmt->execute();
-    }
-
-    public function getAllProducts()
-    {
-        $result = $this->db->query("SELECT * FROM products");
-        return $result->fetch_all(MYSQLI_ASSOC);
-    }
-    public function getLatestProducts() {
-        $query = "SELECT * FROM products ORDER BY created_at DESC LIMIT 5";
-        return $this->db->query($query);
-    }
-
-    public function getProductsByCategory($category) {
-        if ($category) {
-            $query = "SELECT * FROM products WHERE category = ?";
-            $stmt = $this->db->prepare($query);
-            $stmt->bind_param("s", $category);
-            $stmt->execute();
-            return $stmt->get_result();
-        } else {
-            $query = "SELECT * FROM products";
-            return $this->db->query($query);
-        }
-    }
-
-    public function getProductById($id)
-    {
-        $stmt = $this->db->prepare("SELECT * FROM products WHERE id = ?");
-        $stmt->bind_param("i", $id);
+    public function getAllProducts() {
+        $query = "SELECT * FROM products";
+        $stmt = $this->conn->prepare($query);
         $stmt->execute();
-        $result = $stmt->get_result();
-
-        if ($result->num_rows > 0) {
-            return $result->fetch_assoc();
-        }
-
-        return null;
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-public function searchProducts($query)
-{
-   
-    $sql = "SELECT id, image, title, description, price FROM products WHERE title LIKE ? OR description LIKE ?";
-    $stmt = $this->db->prepare($sql);
-    $searchTerm = '%' . $query . '%'; 
-    $stmt->bind_param('ss', $searchTerm, $searchTerm); 
-    $stmt->execute();
-    return $stmt->get_result();
-}
+    // Method to search products based on a query
+    public function searchProducts($query) {
+        $query = "%" . $query . "%"; // Adding wildcard for LIKE operator
+        $sql = "SELECT * FROM products WHERE title LIKE :query OR description LIKE :query";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(':query', $query, PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 
+    public function getProductById($id) {
+        $query = "SELECT * FROM products WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function addProduct($title, $category, $description, $price, $imagePath) {
+        $query = "INSERT INTO products (title, category, description, price, image) 
+                  VALUES (:title, :category, :description, :price, :image)";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':title', $title, PDO::PARAM_STR);
+        $stmt->bindParam(':category', $category, PDO::PARAM_STR);
+        $stmt->bindParam(':description', $description, PDO::PARAM_STR);
+        $stmt->bindParam(':price', $price, PDO::PARAM_STR);
+        $stmt->bindParam(':image', $imagePath, PDO::PARAM_STR);
+        $stmt->execute();
+    }
+
+    public function updateProduct($id, $title, $category, $description, $price, $imagePath) {
+        $query = "UPDATE products 
+                  SET title = :title, category = :category, description = :description, 
+                      price = :price, image = :image 
+                  WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->bindParam(':title', $title, PDO::PARAM_STR);
+        $stmt->bindParam(':category', $category, PDO::PARAM_STR);
+        $stmt->bindParam(':description', $description, PDO::PARAM_STR);
+        $stmt->bindParam(':price', $price, PDO::PARAM_STR);
+        $stmt->bindParam(':image', $imagePath, PDO::PARAM_STR);
+        $stmt->execute();
+    }
+
+    public function deleteProduct($id) {
+        $query = "DELETE FROM products WHERE id = :id";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+    }
+
+    public function getLatestProducts() {
+        $query = "SELECT * FROM products ORDER BY created_at DESC LIMIT 5"; // or change based on your requirements
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        return $stmt;
+    }
+    public function getProductsByCategory($category = '') {
+        // If no category is selected, fetch all products
+        if (empty($category)) {
+            $query = "SELECT * FROM products";
+        } else {
+            // Fetch products based on the selected category
+            $query = "SELECT * FROM products WHERE category = :category";
+        }
+        
+        $stmt = $this->conn->prepare($query);
+    
+        if (!empty($category)) {
+            $stmt->bindParam(':category', $category, PDO::PARAM_STR);
+        }
+    
+        $stmt->execute();
+        return $stmt;
+    }
+    
+    
 }
 ?>
+
+
 

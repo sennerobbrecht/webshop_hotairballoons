@@ -1,9 +1,7 @@
-<?php 
+<?php
 session_start();
 
-
-
-
+// Check if user is logged in
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     header('Location: login.php');
     exit();
@@ -11,12 +9,13 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
 $email = $_SESSION['email'] ?? '';
 
-
+// Include required files
 require_once __DIR__ . '/classes/Database.php';
 require_once __DIR__ . '/classes/Products.php';
 
+// Create an instance of the Database class
 $db = new Database();
-$productManager = new Product($db);
+$productManager = new Product($db->getConnection());
 ?>
 
 <!DOCTYPE html>
@@ -28,15 +27,15 @@ $productManager = new Product($db);
     <link rel="stylesheet" href="css/web.css">
 </head>
 <body>
+
 <?php
-    
+    // Display the appropriate navbar based on the user
     if ($email === 'admin@admin.com') {
         include_once 'admin-navbar.php';
     } else {
         include_once 'navbar.php';
     }
 ?>
-
 
 <section class="hero">
     <h1 class="hero-title">Welkom in onze webshop!</h1>
@@ -53,19 +52,19 @@ $productManager = new Product($db);
         <button class="carousel-button left" onclick="scrollCarousel(-1)">&#10094;</button>
         <div class="product-carousel">
             <?php
-         
-            $latestProductsResult = $productManager->getLatestProducts();
+                $latestProductsResult = $productManager->getLatestProducts();
 
-            if ($latestProductsResult->num_rows > 0) {
-                while ($product = $latestProductsResult->fetch_assoc()) {
-                    echo '<div class="product-card">';
-                    echo '<a href="product.php?id=' . $product['id'] . '"><img src="' . htmlspecialchars($product['image']) . '" alt="' . htmlspecialchars($product['title']) . '" class="product-image"></a>';
-                    echo '<h3 class="product-title">' . htmlspecialchars($product['title']) . '</h3>';
-                    echo '</div>';
+                // Check if there are products
+                if ($latestProductsResult->rowCount() > 0) {
+                    while ($product = $latestProductsResult->fetch(PDO::FETCH_ASSOC)) {
+                        echo '<div class="product-card">';
+                        echo '<a href="product.php?id=' . $product['id'] . '"><img src="' . htmlspecialchars($product['image']) . '" alt="' . htmlspecialchars($product['title']) . '" class="product-image"></a>';
+                        echo '<h3 class="product-title">' . htmlspecialchars($product['title']) . '</h3>';
+                        echo '</div>';
+                    }
+                } else {
+                    echo '<p>Geen producten beschikbaar.</p>';
                 }
-            } else {
-                echo '<p>Geen producten beschikbaar.</p>';
-            }
             ?>
         </div>
         <button class="carousel-button right" onclick="scrollCarousel(1)">&#10095;</button>
@@ -74,10 +73,10 @@ $productManager = new Product($db);
 
 <hr class="section-divider">
 
-
 <section class="all-products">
     <h2 class="section-title">Alle artikelen</h2>
 
+    <!-- Category filter form -->
     <form method="GET" action="">
         <label for="category">Filter op categorie:</label>
         <select name="category" id="category">
@@ -93,22 +92,21 @@ $productManager = new Product($db);
 
     <div class="products-grid">
         <?php
-        
-        $category = isset($_GET['category']) ? $_GET['category'] : '';
-        $allProductsResult = $productManager->getProductsByCategory($category);
+            $category = isset($_GET['category']) ? $_GET['category'] : '';
+            $allProductsResult = $productManager->getProductsByCategory($category);
 
-      
-        if ($allProductsResult->num_rows > 0) {
-            while ($product = $allProductsResult->fetch_assoc()) {
-                echo '<div class="product-card">';
-                echo '<a href="product.php?id=' . $product['id'] . '"><img src="' . htmlspecialchars($product['image']) . '" alt="' . htmlspecialchars($product['title']) . '" class="product-image"></a>';
-                echo '<h3 class="product-title">' . htmlspecialchars($product['title']) . '</h3>';
-                echo '<p class="product-price">€' . htmlspecialchars($product['price']) . '</p>';
-                echo '</div>';
+            // Check if there are products
+            if ($allProductsResult->rowCount() > 0) {
+                while ($product = $allProductsResult->fetch(PDO::FETCH_ASSOC)) {
+                    echo '<div class="product-card">';
+                    echo '<a href="product.php?id=' . $product['id'] . '"><img src="' . htmlspecialchars($product['image']) . '" alt="' . htmlspecialchars($product['title']) . '" class="product-image"></a>';
+                    echo '<h3 class="product-title">' . htmlspecialchars($product['title']) . '</h3>';
+                    echo '<p class="product-price">€' . htmlspecialchars($product['price']) . '</p>';
+                    echo '</div>';
+                }
+            } else {
+                echo '<p>Geen producten beschikbaar.</p>';
             }
-        } else {
-            echo '<p>Geen producten beschikbaar.</p>';
-        }
         ?>
     </div>
 </section>
@@ -117,6 +115,8 @@ $productManager = new Product($db);
 
 </body>
 </html>
+
+
 
 
 

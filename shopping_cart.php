@@ -9,24 +9,23 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     exit();
 }
 
-
+// Initialize Database connection with PDO
 $database = new Database();
 $db = $database->getConnection();
 
-
+// Retrieve user balance from the database
 $email = $_SESSION['email'] ?? '';
-$query = $db->prepare("SELECT balance FROM users WHERE email = ?");
-$query->bind_param("s", $email); 
+$query = $db->prepare("SELECT balance FROM users WHERE email = :email");
+$query->bindParam(':email', $email, PDO::PARAM_STR);
 $query->execute();
-$result = $query->get_result();
-$user = $result->fetch_assoc();
+$user = $query->fetch(PDO::FETCH_ASSOC);
 
 $balance = $user['balance'] ?? 0; 
 
 $cart = new Cart();
 $totalAmount = $cart->calculateTotal(); 
 
-
+// Remove an item from the cart
 if (isset($_GET['remove']) && is_numeric($_GET['remove'])) {
     $productId = intval($_GET['remove']);
     $cart->removeItem($productId);
@@ -34,12 +33,12 @@ if (isset($_GET['remove']) && is_numeric($_GET['remove'])) {
     exit();
 }
 
-
+// Handle order placement
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_order'])) {
     if ($totalAmount > $balance) {
         echo '<script>alert("Onvoldoende saldo om de bestelling te plaatsen.");</script>';
     } else {
-      
+        // Gather order details
         $orderEmail = $_POST['email'];
         $country = $_POST['country'];
         $city = $_POST['city'];
@@ -47,22 +46,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_order'])) {
         $address = $_POST['address'];
         $houseNumber = $_POST['houseNumber'];
 
-      
+        // Create an order
         $order = new Order($db);
         $orderId = $order->placeOrder($orderEmail, $country, $city, $postalCode, $address, $houseNumber, $totalAmount);
 
-      
+        // Add each cart item to the order
         foreach ($cart->getCart() as $productId => $item) {
             $order->addOrderItem($orderId, $productId, $item['title'], $item['quantity'], $item['price']);
         }
 
-       
+        // Update user balance
         $newBalance = $balance - $totalAmount;
-        $updateBalance = $db->prepare("UPDATE users SET balance = ? WHERE email = ?");
-        $updateBalance->bind_param("ds", $newBalance, $email); // d = double, s = string
+        $updateBalance = $db->prepare("UPDATE users SET balance = :balance WHERE email = :email");
+        $updateBalance->bindParam(':balance', $newBalance, PDO::PARAM_STR);
+        $updateBalance->bindParam(':email', $email, PDO::PARAM_STR);
         $updateBalance->execute();
 
-       
+        // Clear the session cart and update balance
         $_SESSION['cart'] = [];
         $_SESSION['balance'] = $newBalance;
 
@@ -70,9 +70,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_order'])) {
     }
 }
 ?>
-
-
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -157,6 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['submit_order'])) {
 </script>
 </body>
 </html>
+
 
 
 

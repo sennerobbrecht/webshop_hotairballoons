@@ -10,14 +10,13 @@ class User
 
     public function canLogin($email, $password)
     {
-        $query = "SELECT * FROM users WHERE email = ?";
+        $query = "SELECT * FROM users WHERE email = :email";
         $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("s", $email);
+        $stmt->bindParam(':email', $email);
         $stmt->execute();
-        $result = $stmt->get_result();
 
-        if ($result->num_rows === 1) {
-            $user = $result->fetch_assoc();
+        if ($stmt->rowCount() === 1) {
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
             if (password_verify($password, $user['password'])) {
                 return $user;
             }
@@ -29,28 +28,42 @@ class User
     {
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT, ['cost' => 12]);
 
-       
-        $query = "INSERT INTO users (email, password) VALUES (?, ?)";
+        $query = "INSERT INTO users (email, password) VALUES (:email, :password)";
         $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("ss", $email, $hashedPassword);
+        $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':password', $hashedPassword);
 
         if ($stmt->execute()) {
-            return $this->conn->insert_id; 
+            return $this->conn->lastInsertId(); 
         }
         return false;
     }
 
     public function getUserByEmail($email)
     {
-        $query = "SELECT * FROM users WHERE email = ?";
+        $query = "SELECT * FROM users WHERE email = :email";
         $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("s", $email);
+        $stmt->bindParam(':email', $email);
         $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->fetch_assoc();
+        
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    // Add this method to allow password updates
+    public function updatePassword($email, $newPassword)
+    {
+        $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT, ['cost' => 12]);
+
+        $query = "UPDATE users SET password = :password WHERE email = :email";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(':password', $hashedPassword);
+        $stmt->bindParam(':email', $email);
+
+        return $stmt->execute();  // Return true if update is successful, false otherwise
     }
 }
 ?>
+
 
 
 

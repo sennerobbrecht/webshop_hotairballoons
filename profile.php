@@ -4,7 +4,6 @@ require_once __DIR__ . '/classes/Database.php';
 require_once __DIR__ . '/classes/User.php';
 require_once __DIR__ . '/classes/Order.php';  
 
-
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || !isset($_SESSION['email']) || $_SESSION['email'] === 'admin@admin.com') {
     header('Location: login.php');
     exit();
@@ -12,12 +11,10 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || !isset($_
 
 $email = $_SESSION['email'];
 
-
 $database = new Database();
 $conn = $database->getConnection();
 $user = new User($conn);
 $order = new Order($conn);
-
 
 $error = '';
 $success = '';
@@ -29,6 +26,25 @@ if (!$currentUser) {
 }
 
 $orders = $order->getOrdersByEmail($email);
+
+// Handle password update
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['old_password'], $_POST['new_password'])) {
+        $oldPassword = $_POST['old_password'];
+        $newPassword = $_POST['new_password'];
+        
+        // Check old password
+        if (password_verify($oldPassword, $currentUser['password'])) {
+            if ($user->updatePassword($email, $newPassword)) {
+                $success = 'Wachtwoord succesvol bijgewerkt!';
+            } else {
+                $error = 'Fout bij het bijwerken van het wachtwoord.';
+            }
+        } else {
+            $error = 'Oud wachtwoord is niet correct.';
+        }
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -40,7 +56,6 @@ $orders = $order->getOrdersByEmail($email);
     <link rel="stylesheet" href="css/profile.css">
 </head>
 <body>
- 
     <?php
     if ($email === 'admin@admin.com') {
         include_once 'admin-navbar.php';
@@ -49,7 +64,6 @@ $orders = $order->getOrdersByEmail($email);
     }
     ?>
 
-  
     <div class="container">
         <div class="profile-container">
             <h2>Mijn Profiel</h2>
@@ -65,6 +79,7 @@ $orders = $order->getOrdersByEmail($email);
                 
                 <button type="submit">Bijwerken</button>
             </form>
+
             <?php if (!empty($error)): ?>
                 <p class="message error"><?php echo htmlspecialchars($error); ?></p>
             <?php endif; ?>
@@ -72,26 +87,22 @@ $orders = $order->getOrdersByEmail($email);
                 <p class="message success"><?php echo htmlspecialchars($success); ?></p>
             <?php endif; ?>
 
-           
             <h3>Mijn Bestellingen</h3>
             <?php if (!empty($orders)): ?>
                 <table>
                     <thead>
                         <tr>
-                          
                             <th>Product Naam</th>
                             <th>Hoeveelheid</th>
-                            <th> Bedrag</th>
-                          
+                            <th>Bedrag</th>
                             <th>Besteldatum</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($orders as $orderItem): ?>
-                            
+                            <tr>
                                 <td><?php echo isset($orderItem['product_name']) ? htmlspecialchars($orderItem['product_name']) : 'Onbekend'; ?></td>
                                 <td><?php echo isset($orderItem['quantity']) ? htmlspecialchars($orderItem['quantity']) : '0'; ?></td>
-                               
                                 <td>€<?php echo number_format($orderItem['price'] * $orderItem['quantity'], 2, ',', '.'); ?></td>
                                 <td><?php echo htmlspecialchars($orderItem['created_at']); ?></td>
                             </tr>
@@ -105,6 +116,7 @@ $orders = $order->getOrdersByEmail($email);
     </div>
 </body>
 </html>
+
 
 
 

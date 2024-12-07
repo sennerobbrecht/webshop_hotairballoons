@@ -3,11 +3,11 @@ session_start();
 require_once __DIR__ . '/classes/Database.php';
 require_once __DIR__ . '/classes/User.php';
 
-
+// Create a database connection using PDO
 $database = new Database();
-$conn = $database->getConnection();
+$conn = $database->getConnection(); // This will return the PDO connection
 
-
+// Create a new User instance
 $user = new User($conn);
 
 $error = '';
@@ -16,25 +16,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
- 
-    $query = "SELECT COUNT(*) FROM users WHERE email = ?";
+    // Check if the email already exists
+    $query = "SELECT COUNT(*) FROM users WHERE email = :email";
     $stmt = $conn->prepare($query);
-    $stmt->bind_param("s", $email);
+    $stmt->bindParam(':email', $email, PDO::PARAM_STR);
     $stmt->execute();
-    $stmt->bind_result($emailExists);
-    $stmt->fetch();
-    $stmt->close();
+    $emailExists = $stmt->fetchColumn();
 
     if ($emailExists > 0) {
         $error = 'This E-mail already exists. Please log in.';
     } else {
-      
+        // Hash the password before storing it
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT, ['cost' => 12]);
 
-        
-        $query = "INSERT INTO users (email, password) VALUES (?, ?)";
+        // Insert the new user into the database
+        $query = "INSERT INTO users (email, password) VALUES (:email, :password)";
         $stmt = $conn->prepare($query);
-        $stmt->bind_param("ss", $email, $hashedPassword);
+        $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+        $stmt->bindParam(':password', $hashedPassword, PDO::PARAM_STR);
 
         if ($stmt->execute()) {
             header('Location: login.php');
@@ -73,4 +72,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </body>
 </html>
+
+
 

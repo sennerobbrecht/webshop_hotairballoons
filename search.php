@@ -4,22 +4,18 @@ $isLoggedIn = isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true;
 $email = isset($_SESSION['email']) ? $_SESSION['email'] : '';
 
 require_once __DIR__ . '/classes/Database.php';
-require_once __DIR__ . '/classes/Products.php'; 
-
+require_once __DIR__ . '/classes/Products.php';
 
 $database = new Database();
-$product = new Product($database);
-
+$product = new Product($database->getConnection()); // Passing PDO connection
 
 $query = isset($_GET['query']) ? $_GET['query'] : '';
 
-
-$result = $product->searchProducts($query);
-
+$result = $product->searchProducts($query); // Calling the newly created searchProducts method
 
 $producten = [];
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
+if (count($result) > 0) {
+    foreach ($result as $row) {
         $producten[] = [
             'id' => $row['id'],
             'afbeelding' => $row['image'],
@@ -31,7 +27,6 @@ if ($result->num_rows > 0) {
 } else {
     $message = "Geen producten gevonden voor '$query'.";
 }
-
 
 $database->closeConnection();
 ?>
@@ -47,7 +42,6 @@ $database->closeConnection();
 <body>
 
 <?php
-    
     if ($email === 'admin@admin.com') {
         include_once 'admin-navbar.php';
     } else {
@@ -59,12 +53,10 @@ $database->closeConnection();
     <h1>Zoekresultaten voor: <?php echo htmlspecialchars($query); ?></h1>
     <div class="divider"></div>
 
-  
     <div class="product-grid">
         <?php if (!empty($producten)): ?>
             <?php foreach ($producten as $product): ?>
                 <div class="product-card">
-               
                     <a href="product.php?id=<?php echo $product['id']; ?>">
                         <img src="<?php echo htmlspecialchars($product['afbeelding']); ?>" alt="<?php echo htmlspecialchars($product['titel']); ?>">
                         <div class="content">

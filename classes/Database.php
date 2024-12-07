@@ -1,6 +1,5 @@
 <?php
 
-
 class Database
 {
     private $conn;
@@ -12,30 +11,31 @@ class Database
         $password = "";
         $database = "webshop_hotairballoons";
 
-       
-        $this->conn = new mysqli($servername, $username, $password, $database);
+        try {
+            // DSN (Data Source Name) format for PDO
+            $dsn = "mysql:host=$servername;dbname=$database;charset=utf8";
+            $this->conn = new PDO($dsn, $username, $password);
 
-      
-        if ($this->conn->connect_error) {
-            die("Verbinding mislukt: " . $this->conn->connect_error);
+            // Set PDO to throw exceptions on errors
+            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch (PDOException $e) {
+            die("Verbinding mislukt: " . $e->getMessage());
         }
     }
-
 
     public function getConnection()
     {
         return $this->conn;
     }
 
-   
     public function closeConnection()
     {
-        if ($this->conn) {
-            $this->conn->close();
-        }
+        // Closing the connection is not necessary in PDO; the connection will be closed automatically when the object is destroyed
+        $this->conn = null;
     }
 }
 
 ?>
+
 
 

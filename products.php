@@ -3,18 +3,17 @@ session_start();
 require_once __DIR__ . '/classes/Database.php';
 require_once __DIR__ . '/classes/Products.php';
 
-
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || $_SESSION['email'] !== 'admin@admin.com') {
     header('Location: login.php');
     exit();
 }
+
 $email = $_SESSION['email'] ?? '';
 
 $db = new Database();
-$productManager = new Product($db);
+$productManager = new Product($db->getConnection());
 
 $categories = ['Complete Ballonnen', 'Manden', 'Enveloppes', 'Accessoires', 'Burners'];
-
 
 if (isset($_GET['delete'])) {
     try {
@@ -26,7 +25,6 @@ if (isset($_GET['delete'])) {
     }
 }
 
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         $title = $_POST['title'];
@@ -35,7 +33,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $price = floatval($_POST['price']);
         $imagePath = null;
 
-       
         if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
             $target_dir = __DIR__ . "/uploads/";
             if (!is_dir($target_dir)) {
@@ -46,10 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if (isset($_POST['action']) && $_POST['action'] === 'edit') {
-           
             $productId = intval($_POST['product_id']);
 
-            
             if (empty($imagePath)) {
                 $existingProduct = $productManager->getProductById($productId);
                 $imagePath = $existingProduct['image'];
@@ -57,7 +52,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $productManager->updateProduct($productId, $title, $category, $description, $price, $imagePath);
         } else {
-            
             $productManager->addProduct($title, $category, $description, $price, $imagePath);
         }
 
@@ -68,7 +62,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-
 $products = [];
 try {
     $products = $productManager->getAllProducts();
@@ -77,7 +70,6 @@ try {
 }
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -85,19 +77,17 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mijn Producten</title>
     <link rel="stylesheet" href="css/products.css">
- 
 </head>
 <body>
 
     <div class="container">
     <?php
- 
-    if ($email === 'admin@admin.com') {
-        include_once 'admin-navbar.php';
-    } else {
-        include_once 'navbar.php';
-    }
-?>
+        if ($email === 'admin@admin.com') {
+            include_once 'admin-navbar.php';
+        } else {
+            include_once 'navbar.php';
+        }
+    ?>
         <div class="product-container">
             <div class="add-button-container">
                 <button class="add-button" onclick="showAddPopup()">+</button>
@@ -124,7 +114,6 @@ try {
         </div>
     </div>
 
-    
     <div class="popup" id="addProductPopup">
         <div class="popup-content">
             <h2>Nieuw Product Toevoegen</h2>
@@ -149,7 +138,6 @@ try {
         </div>
     </div>
 
-   
     <div class="popup" id="editProductPopup">
         <div class="popup-content">
             <h2>Product Bewerken</h2>
@@ -178,6 +166,7 @@ try {
     <script src="javascript/products.js"></script>
 </body>
 </html>
+
 
 
 

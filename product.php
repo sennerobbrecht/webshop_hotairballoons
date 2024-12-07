@@ -1,10 +1,11 @@
 <?php
 session_start();
 
-
+// Include the necessary files
 require_once __DIR__ . '/classes/Database.php';
 require_once __DIR__ . '/classes/Products.php';
 
+// Check if the user is logged in
 $isLoggedIn = isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true;
 $email = isset($_SESSION['email']) ? $_SESSION['email'] : '';
 
@@ -13,17 +14,17 @@ if (!$isLoggedIn) {
     exit();
 }
 
-
+// Create a Database object and establish a connection
 $db = new Database();
 $conn = $db->getConnection();
 
+// Create a Product object to interact with the product table
+$product = new Product($conn);
 
-$product = new Product($db);
-
-
+// Get product ID from the URL parameter and validate it
 $product_id = isset($_GET['id']) && is_numeric($_GET['id']) ? $_GET['id'] : 0;
 
-
+// Fetch product details by ID
 $productDetails = $product->getProductById($product_id);
 
 if (!$productDetails) {
@@ -42,12 +43,12 @@ if (!$productDetails) {
 </head>
 <body>
 <?php
-    
-    if ($email === 'admin@admin.com') {
-        include_once 'admin-navbar.php';
-    } else {
-        include_once 'navbar.php';
-    }
+// Display the appropriate navbar based on the user
+if ($email === 'admin@admin.com') {
+    include_once 'admin-navbar.php';
+} else {
+    include_once 'navbar.php';
+}
 ?>
 
 <div class="product-page">
@@ -64,7 +65,6 @@ if (!$productDetails) {
     </div>
 </div>
 
-
 <div id="notification-popup" class="hidden"></div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -72,6 +72,7 @@ if (!$productDetails) {
 
 </body>
 </html>
+
 
 
 
