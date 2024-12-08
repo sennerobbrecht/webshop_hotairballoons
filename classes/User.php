@@ -61,6 +61,21 @@ class User
 
         return $stmt->execute();  // Return true if update is successful, false otherwise
     }
+    public function getUserIdByEmail($email)
+    {
+        // Use $this->conn instead of $this->db
+        $stmt = $this->conn->prepare("SELECT id FROM users WHERE email = :email");
+        $stmt->bindParam(':email', $email);
+        $stmt->execute();
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($user) {
+            return $user['id'];
+        } else {
+            return null; // Return null if no user found
+        }
+    }
+    
+
 }
 ?>
 

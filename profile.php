@@ -2,7 +2,7 @@
 session_start();
 require_once __DIR__ . '/classes/Database.php';
 require_once __DIR__ . '/classes/User.php';
-require_once __DIR__ . '/classes/Order.php';  
+require_once __DIR__ . '/classes/order.php';  
 
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true || !isset($_SESSION['email']) || $_SESSION['email'] === 'admin@admin.com') {
     header('Location: login.php');

@@ -6,6 +6,7 @@ class Order {
         $this->conn = $db;
     }
 
+
     public function placeOrder($email, $country, $city, $postalCode, $address, $houseNumber, $totalAmount) {
         $query = "INSERT INTO orders (email, country, city, postal_code, address, house_number, total_amount)
                   VALUES (:email, :country, :city, :postal_code, :address, :house_number, :total_amount)";
@@ -18,11 +19,11 @@ class Order {
         $stmt->bindParam(':house_number', $houseNumber);
         $stmt->bindParam(':total_amount', $totalAmount);
         $stmt->execute();
-        return $this->conn->lastInsertId();  
+        return $this->conn->lastInsertId();
     }
 
     public function addOrderItem($orderId, $productId, $productName, $quantity, $price) {
-        $query = "INSERT INTO order_items (order_id, product_id, product_name, quantity, price)
+        $query = "INSERT INTO order_items (order_id, product_id, product_name, quantity, price) 
                   VALUES (:order_id, :product_id, :product_name, :quantity, :price)";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':order_id', $orderId);

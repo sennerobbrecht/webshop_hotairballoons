@@ -1,11 +1,10 @@
 <?php
 session_start();
 
-// Include the necessary files
 require_once __DIR__ . '/classes/Database.php';
 require_once __DIR__ . '/classes/Products.php';
+require_once __DIR__ . '/classes/User.php';
 
-// Check if the user is logged in
 $isLoggedIn = isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true;
 $email = isset($_SESSION['email']) ? $_SESSION['email'] : '';
 
@@ -14,17 +13,49 @@ if (!$isLoggedIn) {
     exit();
 }
 
-// Create a Database object and establish a connection
+// Establish the database connection
 $db = new Database();
-$conn = $db->getConnection();
+$conn = $db->getConnection();  // Get the PDO connection
 
-// Create a Product object to interact with the product table
+// Create the User object and pass the connection
+$userClass = new User($conn);
+
+// Now call the method and debug
+$userId = $userClass->getUserIdByEmail($email);
+
 $product = new Product($conn);
 
-// Get product ID from the URL parameter and validate it
 $product_id = isset($_GET['id']) && is_numeric($_GET['id']) ? $_GET['id'] : 0;
 
-// Fetch product details by ID
+// Handle the form submission for adding product to cart
+// Handle the form submission for adding product to cart
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['product_id']) && !empty($_POST['product_id'])) {
+        $product_id = $_POST['product_id'];
+        
+        // Default quantity to 1 when adding to cart
+        $quantity = 1;
+
+        // Insert into user_product table with quantity
+        $query = "INSERT INTO user_product (user_id, product_id, quantity) VALUES (:user_id, :product_id, :quantity)";
+        $stmt = $conn->prepare($query);
+        $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
+        $stmt->bindParam(':product_id', $product_id, PDO::PARAM_INT);
+        $stmt->bindParam(':quantity', $quantity, PDO::PARAM_INT);  // Bind the quantity parameter
+        
+        if ($stmt->execute()) {
+            // Optionally, display a confirmation or redirect
+            echo "<script>alert('Product toegevoegd aan winkelwagentje.');</script>";
+        } else {
+            echo "<script>alert('Er is een fout opgetreden.');</script>";
+        }
+    }
+}
+
+
+var_dump($userId);  // Debugging output
+var_dump($product_id);  // Debugging output
+
 $productDetails = $product->getProductById($product_id);
 
 if (!$productDetails) {
@@ -43,7 +74,6 @@ if (!$productDetails) {
 </head>
 <body>
 <?php
-// Display the appropriate navbar based on the user
 if ($email === 'admin@admin.com') {
     include_once 'admin-navbar.php';
 } else {
@@ -59,7 +89,8 @@ if ($email === 'admin@admin.com') {
         <h1 class="product-title"><?php echo htmlspecialchars($productDetails['title']); ?></h1>
         <p class="product-description"><?php echo htmlspecialchars($productDetails['description']); ?></p>
         <p class="product-price"><?php echo '€' . htmlspecialchars($productDetails['price']); ?></p>
-        <form onsubmit="event.preventDefault(); addToCart(<?php echo $productDetails['id']; ?>, '<?php echo addslashes($productDetails['title']); ?>', <?php echo $productDetails['price']; ?>, '<?php echo addslashes($productDetails['image']); ?>');">
+        <form method="POST" action="product.php">
+            <input type="hidden" name="product_id" value="<?php echo $productDetails['id']; ?>">
             <button type="submit" class="add-to-cart-btn">Toevoegen aan winkelwagentje</button>
         </form>
     </div>
@@ -72,6 +103,8 @@ if ($email === 'admin@admin.com') {
 
 </body>
 </html>
+
+
 
 
 

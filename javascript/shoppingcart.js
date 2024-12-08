@@ -25,6 +25,11 @@ function placeOrder(event) {
     document.getElementById('orderForm').submit();
 }
 
+function closePopup() {
+    document.getElementById('orderForm').style.display = 'none';
+}
+
+
 
 
 
