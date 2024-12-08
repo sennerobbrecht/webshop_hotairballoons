@@ -27,13 +27,12 @@ if (!$currentUser) {
 
 $orders = $order->getOrdersByEmail($email);
 
-// Handle password update
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['old_password'], $_POST['new_password'])) {
         $oldPassword = $_POST['old_password'];
         $newPassword = $_POST['new_password'];
         
-        // Check old password
+    
         if (password_verify($oldPassword, $currentUser['password'])) {
             if ($user->updatePassword($email, $newPassword)) {
                 $success = 'Wachtwoord succesvol bijgewerkt!';

@@ -49,7 +49,6 @@ class User
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    // Add this method to allow password updates
     public function updatePassword($email, $newPassword)
     {
         $hashedPassword = password_hash($newPassword, PASSWORD_DEFAULT, ['cost' => 12]);
@@ -59,11 +58,11 @@ class User
         $stmt->bindParam(':password', $hashedPassword);
         $stmt->bindParam(':email', $email);
 
-        return $stmt->execute();  // Return true if update is successful, false otherwise
+        return $stmt->execute();  
     }
     public function getUserIdByEmail($email)
     {
-        // Use $this->conn instead of $this->db
+    
         $stmt = $this->conn->prepare("SELECT id FROM users WHERE email = :email");
         $stmt->bindParam(':email', $email);
         $stmt->execute();
@@ -71,7 +70,7 @@ class User
         if ($user) {
             return $user['id'];
         } else {
-            return null; // Return null if no user found
+            return null; 
         }
     }
     

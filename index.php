@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Check if user is logged in
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     header('Location: login.php');
     exit();
@@ -9,11 +8,11 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
 
 $email = $_SESSION['email'] ?? '';
 
-// Include required files
+
 require_once __DIR__ . '/classes/Database.php';
 require_once __DIR__ . '/classes/Products.php';
 
-// Create an instance of the Database class
+
 $db = new Database();
 $productManager = new Product($db->getConnection());
 ?>
@@ -29,7 +28,7 @@ $productManager = new Product($db->getConnection());
 <body>
 
 <?php
-    // Display the appropriate navbar based on the user
+ 
     if ($email === 'admin@admin.com') {
         include_once 'admin-navbar.php';
     } else {
@@ -54,7 +53,7 @@ $productManager = new Product($db->getConnection());
             <?php
                 $latestProductsResult = $productManager->getLatestProducts();
 
-                // Check if there are products
+           
                 if ($latestProductsResult->rowCount() > 0) {
                     while ($product = $latestProductsResult->fetch(PDO::FETCH_ASSOC)) {
                         echo '<div class="product-card">';
@@ -76,7 +75,7 @@ $productManager = new Product($db->getConnection());
 <section class="all-products">
     <h2 class="section-title">Alle artikelen</h2>
 
-    <!-- Category filter form -->
+  
     <form method="GET" action="">
         <label for="category">Filter op categorie:</label>
         <select name="category" id="category">
@@ -95,7 +94,7 @@ $productManager = new Product($db->getConnection());
             $category = isset($_GET['category']) ? $_GET['category'] : '';
             $allProductsResult = $productManager->getProductsByCategory($category);
 
-            // Check if there are products
+           
             if ($allProductsResult->rowCount() > 0) {
                 while ($product = $allProductsResult->fetch(PDO::FETCH_ASSOC)) {
                     echo '<div class="product-card">';

@@ -2,7 +2,6 @@
 class Product {
     private $conn;
 
-    // Constructor accepts PDO object
     public function __construct(PDO $dbConnection) {
         $this->conn = $dbConnection;
     }
@@ -14,9 +13,8 @@ class Product {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Method to search products based on a query
     public function searchProducts($query) {
-        $query = "%" . $query . "%"; // Adding wildcard for LIKE operator
+        $query = "%" . $query . "%"; 
         $sql = "SELECT * FROM products WHERE title LIKE :query OR description LIKE :query";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(':query', $query, PDO::PARAM_STR);
@@ -67,17 +65,17 @@ class Product {
     }
 
     public function getLatestProducts() {
-        $query = "SELECT * FROM products ORDER BY created_at DESC LIMIT 5"; // or change based on your requirements
+        $query = "SELECT * FROM products ORDER BY created_at DESC LIMIT 5"; 
         $stmt = $this->conn->prepare($query);
         $stmt->execute();
         return $stmt;
     }
     public function getProductsByCategory($category = '') {
-        // If no category is selected, fetch all products
+     
         if (empty($category)) {
             $query = "SELECT * FROM products";
         } else {
-            // Fetch products based on the selected category
+           
             $query = "SELECT * FROM products WHERE category = :category";
         }
         

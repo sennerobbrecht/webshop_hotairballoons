@@ -5,17 +5,17 @@ require_once __DIR__ . '/classes/cart.php';
 require_once __DIR__ . '/classes/order.php';
 require_once __DIR__ . '/classes/User.php';
 
-// Controleer of de gebruiker is ingelogd
+
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     header('Location: login.php');
     exit();
 }
 
-// Verbinding maken met de database
+
 $database = new Database();
 $db = $database->getConnection();
 
-// Haal het saldo van de gebruiker op
+
 $email = $_SESSION['email'] ?? '';
 $query = $db->prepare("SELECT balance FROM users WHERE email = :email");
 $query->bindParam(':email', $email, PDO::PARAM_STR);
@@ -23,15 +23,15 @@ $query->execute();
 $user = $query->fetch(PDO::FETCH_ASSOC);
 $balance = $user['balance'] ?? 0;
 
-// Haal de userId op via de User class en het emailadres
+
 $userClass = new User($db);
 $userId = $userClass->getUserIdByEmail($email);
 
-// Haal de winkelmand op
+
 $cart = new Cart($db, $email, $userId);
 $totalAmount = $cart->calculateTotal();
 
-// Verwijder een item uit de winkelmand
+
 if (isset($_GET['remove']) && is_numeric($_GET['remove'])) {
     $productId = intval($_GET['remove']);
     $cart->removeItem($productId);
@@ -40,17 +40,17 @@ if (isset($_GET['remove']) && is_numeric($_GET['remove'])) {
     exit();
 }
 
-// Voeg product toe aan de winkelmand
+
 if (isset($_GET['product_id']) && is_numeric($_GET['product_id'])) {
     $productId = $_GET['product_id'];
 
-    // Haal productinformatie op uit de database
+   
     $query = $db->prepare("SELECT id, title, price FROM products WHERE id = :product_id");
     $query->bindParam(':product_id', $productId, PDO::PARAM_INT);
     $query->execute();
     $product = $query->fetch(PDO::FETCH_ASSOC);
 
-    // Voeg het product toe aan de winkelmand als het bestaat
+ 
     if ($product) {
         $stmt = $db->prepare("INSERT INTO user_product (user_id, product_id) VALUES (:user_id, :product_id)");
         $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
@@ -64,7 +64,7 @@ if (isset($_GET['product_id']) && is_numeric($_GET['product_id'])) {
     exit();
 }
 
-// Bestelling plaatsen
+
 if (isset($_POST['submit_order'])) {
     // Verkrijg de gegevens van het formulier
     $country = $_POST['country'] ?? '';
@@ -73,20 +73,20 @@ if (isset($_POST['submit_order'])) {
     $address = $_POST['address'] ?? '';
     $houseNumber = $_POST['houseNumber'] ?? '';
 
-    // Controleer of het saldo voldoende is
+   
     if ($totalAmount > $balance) {
         echo '<script>alert("Je hebt niet genoeg saldo om deze bestelling te plaatsen.");</script>';
     } else {
-        // Plaats de bestelling in de database
+  
         $orderClass = new Order($db);
         $orderId = $orderClass->placeOrder($email, $country, $city, $postalCode, $address, $houseNumber, $totalAmount);
 
-        // Voeg de producten toe aan de bestelling
+      
         foreach ($cart->getCart() as $productId => $item) {
             $orderClass->addOrderItem($orderId, $productId, $item['title'], $item['quantity'], $item['price']);
         }
 
-        // Werk het saldo bij na de bestelling
+      
         $newBalance = $balance - $totalAmount;
         $updateQuery = "UPDATE users SET balance = :newBalance WHERE email = :email";
         $updateStmt = $db->prepare($updateQuery);
@@ -94,12 +94,11 @@ if (isset($_POST['submit_order'])) {
         $updateStmt->bindParam(':email', $email, PDO::PARAM_STR);
         $updateStmt->execute();
 
-        // Verwijder de producten uit de winkelmand van de gebruiker
         $cart->deleteProductsByUser($userId);
 
-        // Reset de winkelmand
+     
         $_SESSION['cart'] = [];
-        header('Location: index.php'); // Verwijs naar bevestigingspagina
+        header('Location: index.php');
         exit();
     }
 }

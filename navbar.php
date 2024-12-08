@@ -1,6 +1,6 @@
 <?php
 
- // Zorg ervoor dat je databaseconfiguratie hier correct is.
+
 
 $isLoggedIn = isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true;
 $email = isset($_SESSION['email']) ? $_SESSION['email'] : '';
@@ -10,15 +10,14 @@ if (!$isLoggedIn) {
     exit();
 }
 
-// Maak databaseverbinding
+
 $mysqli = new mysqli("localhost", "root", "", "webshop_hotairballoons");
 
-// Controleer op verbindingsfout
+
 if ($mysqli->connect_error) {
     die("Fout bij verbinden met de database: " . $mysqli->connect_error);
 }
 
-// Haal het saldo van de gebruiker op uit de database
 $balance = 0;
 if ($stmt = $mysqli->prepare("SELECT balance FROM users WHERE email = ?")) {
     $stmt->bind_param("s", $email);
@@ -28,11 +27,10 @@ if ($stmt = $mysqli->prepare("SELECT balance FROM users WHERE email = ?")) {
     $stmt->close();
 }
 
-// Sla het saldo op in de sessie
+
 $_SESSION['balance'] = $balance;
 
-// Debugging: Optioneel om te controleren of het saldo correct wordt geladen
-// var_dump($balance);
+
 ?>
 
 <!DOCTYPE html>

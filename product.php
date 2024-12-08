@@ -13,38 +13,37 @@ if (!$isLoggedIn) {
     exit();
 }
 
-// Establish the database connection
-$db = new Database();
-$conn = $db->getConnection();  // Get the PDO connection
 
-// Create the User object and pass the connection
+$db = new Database();
+$conn = $db->getConnection();  
+
+
 $userClass = new User($conn);
 
-// Now call the method and debug
+
 $userId = $userClass->getUserIdByEmail($email);
 
 $product = new Product($conn);
 
 $product_id = isset($_GET['id']) && is_numeric($_GET['id']) ? $_GET['id'] : 0;
 
-// Handle the form submission for adding product to cart
-// Handle the form submission for adding product to cart
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['product_id']) && !empty($_POST['product_id'])) {
         $product_id = $_POST['product_id'];
         
-        // Default quantity to 1 when adding to cart
+       
         $quantity = 1;
 
-        // Insert into user_product table with quantity
+      
         $query = "INSERT INTO user_product (user_id, product_id, quantity) VALUES (:user_id, :product_id, :quantity)";
         $stmt = $conn->prepare($query);
         $stmt->bindParam(':user_id', $userId, PDO::PARAM_INT);
         $stmt->bindParam(':product_id', $product_id, PDO::PARAM_INT);
-        $stmt->bindParam(':quantity', $quantity, PDO::PARAM_INT);  // Bind the quantity parameter
+        $stmt->bindParam(':quantity', $quantity, PDO::PARAM_INT);
         
         if ($stmt->execute()) {
-            // Optionally, display a confirmation or redirect
+           
             echo "<script>alert('Product toegevoegd aan winkelwagentje.');</script>";
         } else {
             echo "<script>alert('Er is een fout opgetreden.');</script>";
@@ -53,8 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 
-var_dump($userId);  // Debugging output
-var_dump($product_id);  // Debugging output
+
 
 $productDetails = $product->getProductById($product_id);
 

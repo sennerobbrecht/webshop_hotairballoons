@@ -7,11 +7,11 @@ require_once __DIR__ . '/classes/Database.php';
 require_once __DIR__ . '/classes/Products.php';
 
 $database = new Database();
-$product = new Product($database->getConnection()); // Passing PDO connection
+$product = new Product($database->getConnection()); 
 
 $query = isset($_GET['query']) ? $_GET['query'] : '';
 
-$result = $product->searchProducts($query); // Calling the newly created searchProducts method
+$result = $product->searchProducts($query); 
 
 $producten = [];
 if (count($result) > 0) {
